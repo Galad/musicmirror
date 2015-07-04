@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22609.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMirror", "MusicMirror\MusicMirror.csproj", "{2F861471-1C60-4789-888A-DF8D5CD0E1F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMirror.Tests", "MusicMirror.Tests\MusicMirror.Tests.csproj", "{C913E20B-5A85-40FC-9C64-6E2B8DD15A40}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9B77D067-CCB7-4FCE-951E-DA9C75DDA6B6}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMirror.Transcoding", "MusicMirror.Transcoding\MusicMirror.Transcoding.csproj", "{E289F001-D801-4CE5-AFCA-069B9DF88E8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMirror.Core", "MusicMirror.Core\MusicMirror.Core.csproj", "{39A420A9-AF25-4B23-A5B8-0FB86138B3CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMirror.Transcoding.Tests", "MusicMirror.Transcoding.Tests\MusicMirror.Transcoding.Tests.csproj", "{1A1793F3-8600-428B-A279-26E73962F6CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMirror.Specs", "MusicMirror.Specs\MusicMirror.Specs.csproj", "{25F1F17D-3204-44F7-886D-A559CA160C7E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F861471-1C60-4789-888A-DF8D5CD0E1F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F861471-1C60-4789-888A-DF8D5CD0E1F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F861471-1C60-4789-888A-DF8D5CD0E1F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F861471-1C60-4789-888A-DF8D5CD0E1F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C913E20B-5A85-40FC-9C64-6E2B8DD15A40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C913E20B-5A85-40FC-9C64-6E2B8DD15A40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C913E20B-5A85-40FC-9C64-6E2B8DD15A40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C913E20B-5A85-40FC-9C64-6E2B8DD15A40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E289F001-D801-4CE5-AFCA-069B9DF88E8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E289F001-D801-4CE5-AFCA-069B9DF88E8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E289F001-D801-4CE5-AFCA-069B9DF88E8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E289F001-D801-4CE5-AFCA-069B9DF88E8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39A420A9-AF25-4B23-A5B8-0FB86138B3CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39A420A9-AF25-4B23-A5B8-0FB86138B3CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39A420A9-AF25-4B23-A5B8-0FB86138B3CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39A420A9-AF25-4B23-A5B8-0FB86138B3CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A1793F3-8600-428B-A279-26E73962F6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A1793F3-8600-428B-A279-26E73962F6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A1793F3-8600-428B-A279-26E73962F6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A1793F3-8600-428B-A279-26E73962F6CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25F1F17D-3204-44F7-886D-A559CA160C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25F1F17D-3204-44F7-886D-A559CA160C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25F1F17D-3204-44F7-886D-A559CA160C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25F1F17D-3204-44F7-886D-A559CA160C7E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
