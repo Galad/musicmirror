@@ -15,12 +15,12 @@ namespace MusicMirror
 		Task<WaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format);
 	}
 
-	public class WaveStream : IDisposable
+	public class WaveStream : IDisposable, IWaveProvider
 	{
 		private readonly WaveFormat _format;
-		private readonly Stream _stream;
+		private readonly NAudio.Wave.WaveStream _stream;
 
-		public WaveStream(Stream stream, WaveFormat format)
+		public WaveStream(NAudio.Wave.WaveStream stream, WaveFormat format)
 		{
 			if (stream == null) throw new ArgumentNullException(nameof(stream));
 			if (format == null) throw new ArgumentNullException(nameof(format));
@@ -28,7 +28,7 @@ namespace MusicMirror
 			_format = format;
 		}
 
-		public WaveFormat Format
+		public WaveFormat WaveFormat
 		{
 			get
 			{
@@ -47,6 +47,11 @@ namespace MusicMirror
 		public void Dispose()
 		{
 			_stream.Dispose();
+		}
+
+		public int Read(byte[] buffer, int offset, int count)
+		{
+			return _stream.Read(buffer, offset, count);
 		}
 	}
 

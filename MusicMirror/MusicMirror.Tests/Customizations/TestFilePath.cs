@@ -32,6 +32,14 @@ namespace MusicMirror.Tests.Customizations
 		public FileInfo File { get { return _fileInfo; } }
 		public string RelativePath { get { return string.Join("\\", _relativePath); } }
 
+		public bool IsReadonly
+		{
+			get
+			{
+				return false;
+			}
+		}
+
 		public override string ToString()
 		{
 			return _fileInfo.FullName;

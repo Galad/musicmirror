@@ -56,7 +56,7 @@ namespace MusicMirror
 			var visitor = _fileSynchronizerVisitorFactory.CreateVisitor(configuration);
 			return _fileObserverFactory.GetFileObserver(configuration.SourcePath)
 									   .SelectMany(files => files.Select(file => SynchronizeFile(file, visitor))
-																 .Merge(1));
+																 .Merge(4));
 		}
 
 		private static IObservable<Unit> SynchronizeFile(IFileNotification file, IFileSynchronizerVisitor visitor)

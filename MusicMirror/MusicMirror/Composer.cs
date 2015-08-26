@@ -121,8 +121,11 @@ namespace MusicMirror
 				new CopyId3TagsPostProcessor(
 				new NAudioFileTranscoder(
 					new FlacStreamReader(),
+					//new FlacStreamReaderInternalNAudioFlac(),
 					new WaveToMp3Transcoder(),
-					new AsyncOperations(new FileOperations()),
+					//new RawWaveTranscoder(),
+					//new WaveToMp3MediaFoundationTranscoder(),
+                    new AsyncOperations(new FileOperations()),
 					new AsyncDirectoryOperations(new DirectoryOperations())
 					),
 				new AudioTagsSynchronizer(

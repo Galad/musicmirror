@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.MediaFoundation;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +14,16 @@ namespace MusicMirror
 	/// </summary>
 	public partial class App : Application
 	{
+		protected override void OnStartup(StartupEventArgs e)
+		{
+			base.OnStartup(e);
+			MediaFoundationApi.Startup();
+        }
+
+		protected override void OnExit(ExitEventArgs e)
+		{
+			base.OnExit(e);
+			MediaFoundationApi.Shutdown();
+		}
 	}
 }
