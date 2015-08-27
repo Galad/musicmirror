@@ -13,6 +13,7 @@ using Ploeh.AutoFixture.Idioms;
 using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 using static Hanno.Testing.Autofixture.MockExtensions;
+using Ploeh.AutoFixture;
 
 namespace MusicMirror.Transcoding.Tests
 {
@@ -41,7 +42,7 @@ namespace MusicMirror.Transcoding.Tests
 			 Configuration config,
 			 SourceFilePath sourceFile,
 			 TargetFilePath targetFile,
-			 WaveStream waveStream,
+			 IWaveStream waveStream,
 			 Stream sourceStream,
 			 Stream targetStream)
 		{
@@ -56,7 +57,7 @@ namespace MusicMirror.Transcoding.Tests
 			//assert
 			waveStreamTranscoder.Verify(t => t.Transcode(It.IsAny<CancellationToken>(), waveStream, targetStream));
 		}
-
+		
 		[Theory,
 			FileInlineAutoData(true, false),
 			FileInlineAutoData(false, true),
@@ -67,13 +68,14 @@ namespace MusicMirror.Transcoding.Tests
 			 [Frozen]Mock<IAsyncDirectoryOperations> asyncDirectoryOperations,
 			 NAudioFileTranscoder sut,
 			 Configuration config,
-			 SourceFilePath sourceFile)
-		{
+			 SourceFilePath sourceFile,
+			 IFixture fixture)
+		{			
 			//arrange
 			asyncDirectoryOperations.Setup(d => d.Exists(config.TargetPath.FullName)).ReturnsTask(exist);
 			//act
 			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.Flac, config.TargetPath);
-			//assert
+			//assetr
 			asyncDirectoryOperations.VerifyOnce(d => d.CreateDirectory(config.TargetPath.FullName), shouldCallCreateDirectory);
 		}
 	}

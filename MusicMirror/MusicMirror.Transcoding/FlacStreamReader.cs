@@ -12,24 +12,24 @@ namespace MusicMirror.Transcoding
 {
 	public class FlacStreamReader : IAudioStreamReader
 	{
-		public Task<WaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format)
+		public Task<IWaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format)
 		{
 			return Task.Run(() =>
 			{
 				var stream = new NAudio.Flac.FlacReader(sourceStream);
-				return new WaveStream(stream, stream.WaveFormat);
+				return (IWaveStream)(new WaveStream(stream, stream.WaveFormat));
 			});			
 		}
 	}
 
 	public class FlacStreamReaderInternalNAudioFlac : IAudioStreamReader
 	{
-		public Task<WaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format)
+		public Task<IWaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format)
 		{
 			return Task.Run(() =>
 			{
 				var stream = new WaveStreamFromFlacStream(sourceStream);
-				return new WaveStream(stream, stream.WaveFormat);
+				return (IWaveStream)(new WaveStream(stream, stream.WaveFormat));
 			});
 		}
 	}
