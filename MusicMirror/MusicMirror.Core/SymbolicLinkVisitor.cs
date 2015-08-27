@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hanno.IO;
 using MusicMirror.Synchronization;
+using MusicMirror.Entities;
 
 namespace MusicMirror
 {

@@ -13,6 +13,7 @@ using Xunit;
 using FluentAssertions;
 using Moq;
 using MusicMirror.Tests.Autofixture;
+using MusicMirror.Entities;
 using static Hanno.Testing.Autofixture.MockExtensions;
 
 namespace MusicMirror.Tests

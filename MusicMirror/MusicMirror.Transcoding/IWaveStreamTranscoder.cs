@@ -19,11 +19,11 @@ namespace MusicMirror.Transcoding
 		Task Transcode(CancellationToken ct, IWaveStream stream, Stream targetStream);
 	}
 
-	public class WaveToMp3Transcoder : IWaveStreamTranscoder
+	public class WaveToMP3Transcoder : IWaveStreamTranscoder
 	{
 		public string GetTranscodedFileName(string sourceFileName)
 		{
-			return Path.ChangeExtension(sourceFileName, AudioFormat.Mp3.DefaultExtension);
+			return Path.ChangeExtension(sourceFileName, AudioFormat.MP3.DefaultExtension);
 		}
 
 		public Task Transcode(CancellationToken ct, IWaveStream stream, Stream targetStream)
@@ -49,11 +49,11 @@ namespace MusicMirror.Transcoding
 		}
 	}
 
-	public class WaveToMp3MediaFoundationTranscoder : IWaveStreamTranscoder
+	public class WaveToMP3MediaFoundationTranscoder : IWaveStreamTranscoder
 	{
 		public string GetTranscodedFileName(string sourceFileName)
 		{
-			return Path.ChangeExtension(sourceFileName, AudioFormat.Mp3.DefaultExtension);
+			return Path.ChangeExtension(sourceFileName, AudioFormat.MP3.DefaultExtension);
 		}
 
 		public Task Transcode(CancellationToken ct, IWaveStream stream, Stream targetStream)

@@ -1,27 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	/// <summary>
-	/// Provides informations about a file
-	/// </summary>
-	public interface IFileInfo
-	{
-		/// <summary>
-		/// Returns the last write time for the file, in UTC format
-		/// </summary>
-		DateTimeOffset LastWriteTime { get; }
-		/// <summary>
-		/// The source <c>FileInfo</c>
-		/// </summary>
-		FileInfo File { get; }
-		/// <summary>
-		/// Indicates wether the file is read only
-		/// </summary>
-		bool IsReadonly { get; }
-	}
-
 	class FileInfoWrapper : IFileInfo
 	{
 		private readonly FileInfo _file;

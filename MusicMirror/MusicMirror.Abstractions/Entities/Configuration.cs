@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MusicMirror
+namespace MusicMirror.Entities
 {
 	public enum NonTranscodingFilesBehavior
 	{

@@ -61,9 +61,9 @@ namespace MusicMirror.Transcoding
 		}
 	}
 
-	public class Mp3TagLibReaderWriter : TagLibReaderWriterBase
+	public class MP3TagLibReaderWriter : TagLibReaderWriterBase
 	{
-		public Mp3TagLibReaderWriter() : base("file.mp3", TagTypes.Id3v2)
+		public MP3TagLibReaderWriter() : base("file.mp3", TagTypes.Id3v2)
 		{
 		}
 	}

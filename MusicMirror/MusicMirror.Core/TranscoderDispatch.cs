@@ -28,7 +28,7 @@ namespace MusicMirror
 		public void AddTranscoder(IFileTranscoder transcoder, params AudioFormat[] formats)
 		{
 			if (transcoder == null) throw new ArgumentNullException(nameof(transcoder));
-			if (formats == null) throw new ArgumentNullException("extensions");
+			if (formats == null) throw new ArgumentNullException(nameof(formats));
 			foreach (var format in formats)
 			{
 				_transcoders.Add(new TranscoderEntry() { Format = format, Transcoder = transcoder });

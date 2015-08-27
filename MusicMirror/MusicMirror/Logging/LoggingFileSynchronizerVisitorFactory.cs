@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using log4net;
+using MusicMirror.Entities;
 
 namespace MusicMirror.Logging
 {

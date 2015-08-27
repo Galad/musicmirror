@@ -26,6 +26,7 @@ using MusicMirror.Logging;
 using MusicMirror.Synchronization;
 using MusicMirror.Transcoding;
 using MusicMirror.ViewModels;
+using MusicMirror.Entities;
 
 namespace MusicMirror
 {
@@ -122,7 +123,7 @@ namespace MusicMirror
 				new NAudioFileTranscoder(
 					new FlacStreamReader(),
 					//new FlacStreamReaderInternalNAudioFlac(),
-					new WaveToMp3Transcoder(),
+					new WaveToMP3Transcoder(),
 					//new RawWaveTranscoder(),
 					//new WaveToMp3MediaFoundationTranscoder(),
                     new AsyncOperations(new FileOperations()),
@@ -131,7 +132,7 @@ namespace MusicMirror
 				new AudioTagsSynchronizer(
 					new AsyncOperations(new FileOperations()),
 					new FlacTagLibReaderWriter(),
-					new Mp3TagLibReaderWriter()
+					new MP3TagLibReaderWriter()
 				)),
 				AudioFormat.Flac);
 			return new LoggingFileTranscoder(transcoder, LogManager.GetLogger(typeof(IFileTranscoder)));

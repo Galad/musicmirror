@@ -8,6 +8,7 @@ using Xunit.Extensions;
 using Xunit;
 using FluentAssertions;
 using Moq;
+using MusicMirror.Entities;
 
 namespace MusicMirror.Tests
 {

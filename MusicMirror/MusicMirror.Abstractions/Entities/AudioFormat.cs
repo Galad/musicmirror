@@ -8,17 +8,10 @@ namespace MusicMirror
 {
 	public class AudioFormat : IEquatable<AudioFormat>
 	{
-		public static readonly AudioFormat Mp3;
-		public static readonly AudioFormat Flac;
-		public static readonly IEnumerable<AudioFormat> KnownFormats;
-
-		static AudioFormat()
-		{
-			Mp3 = new AudioFormat("MP3", "MPEG-1/2 Audio Layer 3", ".mp3", LossKind.Lossy);
-			Flac = new AudioFormat("FLAC", "Free Lossless Audio Codec", ".flac", LossKind.Lossy);
-			KnownFormats = new[] { Mp3, Flac }.AsEnumerable();
-		}
-
+		public static readonly AudioFormat MP3 = new AudioFormat("MP3", "MPEG-1/2 Audio Layer 3", ".mp3", LossKind.Lossy);
+		public static readonly AudioFormat Flac = new AudioFormat("FLAC", "Free Lossless Audio Codec", ".flac", LossKind.Lossy);
+		public static readonly IEnumerable<AudioFormat> KnownFormats = new[] { MP3, Flac }.AsEnumerable();
+		
 		private readonly IEnumerable<string> _allExtensions;
 		private readonly string _defaultExtension;
 		private readonly LossKind _lossKind;

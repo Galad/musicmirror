@@ -10,6 +10,7 @@ using FluentAssertions;
 using Moq;
 using System.Threading.Tasks;
 using System.IO;
+using MusicMirror.Entities;
 
 namespace MusicMirror.Transcoding.Tests
 {

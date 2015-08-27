@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -100,10 +104,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlwaysOpenStreamFileAbstraction.cs" />
+    <Compile Include="AudioTagsSynchronizer.cs" />
     <Compile Include="CopyId3TagsPostProcessor.cs" />
     <Compile Include="FlacStreamReader.cs" />
     <Compile Include="FlacTagReader.cs" />
-    <Compile Include="IAudioTagsSynchronizer.cs" />
+    <Compile Include="IAudioTagReader.cs" />
+    <Compile Include="IAudioTagWriter.cs" />
     <Compile Include="IWaveStreamTranscoder.cs" />
     <Compile Include="NAudioFileTranscoder.cs" />
     <Compile Include="IReadWaveStream.cs" />
@@ -122,6 +128,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MusicMirror.Abstractions\MusicMirror.Abstractions.csproj">
+      <Project>{95f457ec-1637-4c0d-8428-786e7cf1204d}</Project>
+      <Name>MusicMirror.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MusicMirror.Core\MusicMirror.Core.csproj">
       <Project>{39a420a9-af25-4b23-a5b8-0fb86138b3ce}</Project>
       <Name>MusicMirror.Core</Name>

@@ -28,25 +28,6 @@ namespace MusicMirror.Synchronization
 		/// <exception cref="NotSupportedException">The source file type is not supported. This exception can occurs if the source file extension is not supported, 
 		/// or if the source file extension does not correspond to its actual file type, 
 		/// or if the source file extension is supported but the encoding format of the source file is not</exception>
-		Task Transcode(CancellationToken file, FileInfo sourceFile, AudioFormat format, DirectoryInfo targetDirectory);
-	}
-
-	public class DebugFileTranscoder : IFileTranscoder
-	{
-		public string GetTranscodedFileName(string sourceFileName)
-		{
-			return Path.GetFileNameWithoutExtension(sourceFileName) + ".debug";
-		}
-
-		public Task Transcode(CancellationToken file, FileInfo sourceFile, AudioFormat format, DirectoryInfo targetDirectory)
-		{
-			Debug.WriteLine("Transcoding {0} to {1}", sourceFile.FullName, sourceFile.DirectoryName);
-			return Task.FromResult(true);
-		}
-
-		public AudioFormat GetTranscodedAudioFormat(string sourceFileName)
-		{
-			return new AudioFormat("Debug", "Debug audio format", ".debug", LossKind.Lossless);
-		}
-	}
+		Task Transcode(CancellationToken ct, FileInfo sourceFile, AudioFormat format, DirectoryInfo targetDirectory);
+	}	
 }

@@ -1,4 +1,5 @@
 using System.Linq;
+using MusicMirror.Entities;
 
 namespace MusicMirror.Tests.Customizations
 {

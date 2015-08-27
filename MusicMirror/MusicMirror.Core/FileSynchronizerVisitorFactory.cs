@@ -1,6 +1,7 @@
 using System;
 using Hanno.IO;
 using MusicMirror.Synchronization;
+using MusicMirror.Entities;
 
 namespace MusicMirror
 {
@@ -39,29 +40,29 @@ namespace MusicMirror
 					transcodingMirroredFileOperations));
 		}
 
-		private IAsyncFileOperations GetFileOperations(NonTranscodingFilesBehavior behavior, IAsyncFileOperations defaultFileOperations)
+		private static IAsyncFileOperations GetFileOperations(NonTranscodingFilesBehavior behavior, IAsyncFileOperations defaultFileOperations)
 		{
 			switch (behavior)
 			{
-			case NonTranscodingFilesBehavior.Copy:
-				return defaultFileOperations;
-			case NonTranscodingFilesBehavior.SymbolicLink:
-				return new SymbolicLinkFileOperations(defaultFileOperations);
-			default:
-				throw new PlatformNotSupportedException();
+				case NonTranscodingFilesBehavior.Copy:
+					return defaultFileOperations;
+				case NonTranscodingFilesBehavior.SymbolicLink:
+					return new SymbolicLinkFileOperations(defaultFileOperations);
+				default:
+					throw new PlatformNotSupportedException();
 			}
 		}
 
-		private IFileSynchronizer GetSynchronizer(Configuration configuration, IAsyncFileOperations fileOperations, IAsyncDirectoryOperations directoryOperations)
+		private static IFileSynchronizer GetSynchronizer(Configuration configuration, IAsyncFileOperations fileOperations, IAsyncDirectoryOperations directoryOperations)
 		{
 			switch (configuration.NonTranscodingFilesBehavior)
 			{
-			case NonTranscodingFilesBehavior.Copy:
-				return new CopyFileSynchronizer(configuration, directoryOperations);
-			case NonTranscodingFilesBehavior.SymbolicLink:
-				return new SymbolicLinkFileSynchronizer(configuration, fileOperations, directoryOperations);
-			default:
-				throw new NotSupportedException();
+				case NonTranscodingFilesBehavior.Copy:
+					return new CopyFileSynchronizer(configuration, directoryOperations);
+				case NonTranscodingFilesBehavior.SymbolicLink:
+					return new SymbolicLinkFileSynchronizer(configuration, fileOperations, directoryOperations);
+				default:
+					throw new NotSupportedException();
 			}
 		}
 	}

@@ -32,9 +32,10 @@ namespace MusicMirror.Synchronization
 			return Task.FromResult(false);
 		}
 	}
-	public sealed class Mp3RequireTranscoding : FileExtensionRequireTranscoding
+
+	public sealed class MP3RequireTranscoding : FileExtensionRequireTranscoding
 	{
-		public Mp3RequireTranscoding() : base(AudioFormat.Mp3.AllExtensions.ToArray())
+		public MP3RequireTranscoding() : base(AudioFormat.MP3.AllExtensions.ToArray())
 		{
 		}
 	}
@@ -54,7 +55,7 @@ namespace MusicMirror.Synchronization
 	public class DefaultRequireTranscoding : CompositeRequireTranscoding
 	{
 		public DefaultRequireTranscoding()
-			: base(new IRequireTranscoding[] { new Mp3RequireTranscoding(), new FlacRequireTranscoding() })
+			: base(new IRequireTranscoding[] { new MP3RequireTranscoding(), new FlacRequireTranscoding() })
 		{
 		}
 	}

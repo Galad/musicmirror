@@ -14,6 +14,7 @@ using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 using static Hanno.Testing.Autofixture.MockExtensions;
 using Ploeh.AutoFixture;
+using MusicMirror.Entities;
 
 namespace MusicMirror.Transcoding.Tests
 {

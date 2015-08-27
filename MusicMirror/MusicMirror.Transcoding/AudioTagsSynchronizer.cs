@@ -1,30 +1,14 @@
-﻿using System;
+﻿using Hanno.IO;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Hanno.IO;
-using TagLib;
 
 namespace MusicMirror.Transcoding
 {
-	public interface IAudioTagsSynchronizer
-	{
-		Task SynchronizeTags(CancellationToken ct, FileInfo sourceFile, FileInfo targetfile);
-	}
-
-	public interface IAudioTagReader
-	{
-		Task<Tag> ReadTags(CancellationToken ct, Stream stream);
-	}
-
-	public interface IAudioTagWriter
-	{
-		Task WriteTags(CancellationToken ct, Stream stream, Tag tags);
-	}
-
 	public class AudioTagsSynchronizer : IAudioTagsSynchronizer
 	{
 		private readonly IAsyncFileOperations _asyncFileOperations;

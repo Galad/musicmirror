@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -79,35 +83,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioFormat.cs" />
-    <Compile Include="Configuration.cs" />
-    <Compile Include="FileAddedNotification.cs" />
-    <Compile Include="FileDeletedNotification.cs" />
     <Compile Include="FileExtensions.cs" />
-    <Compile Include="FileInitNotification.cs" />
-    <Compile Include="FileModifiedNotification.cs" />
-    <Compile Include="FileNotificationBase.cs" />
-    <Compile Include="FileNotificationKind.cs" />
-    <Compile Include="FileRenamedNotification.cs" />
+    <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="FileSynchronizerVisitorFactory.cs" />
-    <Compile Include="Guard.cs" />
-    <Compile Include="IFileInfo.cs" />
-    <Compile Include="IFileNotification.cs" />
-    <Compile Include="IFileObserverFactory.cs" />
-    <Compile Include="IFileSynchronizerVisitor.cs" />
-    <Compile Include="IFileSynchronizerVisitorFactory.cs" />
-    <Compile Include="IFileWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SymbolicLinkVisitor.cs" />
     <Compile Include="Synchronization\ChooseFolderOperation.cs" />
     <Compile Include="Synchronization\CompositeRequireTranscoding.cs" />
+    <Compile Include="Synchronization\DebugFileTranscoder.cs" />
     <Compile Include="Synchronization\FileSynchronizer.cs" />
     <Compile Include="Synchronization\FileSynchronizeVisitor.cs" />
-    <Compile Include="Synchronization\IFileSynchronizer.cs" />
-    <Compile Include="Synchronization\IFileTranscoder.cs" />
-    <Compile Include="Synchronization\IMirroredFolderOperations.cs" />
-    <Compile Include="Synchronization\IRequireTranscoding.cs" />
-    <Compile Include="Synchronization\ISynchronizedFilesRepository.cs" />
     <Compile Include="Synchronization\Mp3RequireTranscoding.cs" />
     <Compile Include="Synchronization\SymbolicLink.cs" />
     <Compile Include="Synchronization\SynchronizedFilesRepository.cs" />
@@ -117,6 +102,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MusicMirror.Abstractions\MusicMirror.Abstractions.csproj">
+      <Project>{95f457ec-1637-4c0d-8428-786e7cf1204d}</Project>
+      <Name>MusicMirror.Abstractions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
