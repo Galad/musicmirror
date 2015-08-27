@@ -33,11 +33,11 @@ namespace MusicMirror.Transcoding
 			return TranscodeInternal(ct, stream, targetStream);
 		}
 
-		public async Task TranscodeInternal(CancellationToken ct, IWaveStream stream, Stream targetStream)
+		public static async Task TranscodeInternal(CancellationToken ct, IWaveStream stream, Stream targetStream)
 		{
 			using (var mp3Writer = new NAudio.Lame.LameMP3FileWriter(targetStream, stream.WaveFormat, NAudio.Lame.LAMEPreset.ABR_320))
 			{				
-				await stream.Stream.CopyToAsync(mp3Writer);
+				await stream.Stream.CopyToAsync(mp3Writer, 81920, ct);
 				//var bytesRead = 1;
     //            while (bytesRead > 0)
 				//{
@@ -72,7 +72,7 @@ namespace MusicMirror.Transcoding
 				{
 					encoder.Encode(GetTranscodedFileName("file.ww"), stream);
 				}
-			});
+			}, ct);
 			//try
 			//{
 			//	var tempFilename = Path.Combine(Path.GetTempPath(), GetTranscodedFileName(Guid.NewGuid().ToString() + ".extension"));

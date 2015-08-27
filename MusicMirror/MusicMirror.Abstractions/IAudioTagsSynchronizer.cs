@@ -10,6 +10,6 @@ namespace MusicMirror.Transcoding
 {
 	public interface IAudioTagsSynchronizer
 	{
-		Task SynchronizeTags(CancellationToken ct, FileInfo sourceFile, FileInfo targetfile);
+		Task SynchronizeTags(CancellationToken ct, FileInfo sourceFile, FileInfo targetFile);
 	}	
 }

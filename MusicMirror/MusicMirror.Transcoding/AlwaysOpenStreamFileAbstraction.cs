@@ -11,7 +11,7 @@ namespace MusicMirror.Transcoding
 	/// A StreamFileAbstraction which does not close the stream when the methode CloseStream is called, but instead position it to 0.
 	/// In order to close the the stream the methode Dispose must be closed
 	/// </summary>
-	public class AlwaysOpenStreamFileAbstraction : TagLib.File.IFileAbstraction, IDisposable
+	public sealed class AlwaysOpenStreamFileAbstraction : TagLib.File.IFileAbstraction, IDisposable
 	{
 		private readonly Stream _stream;
 		private readonly string _name;

@@ -20,7 +20,7 @@ namespace MusicMirror
 		Stream Stream { get; }	
 	}
 
-	public class WaveStream : IWaveStream
+	public sealed class WaveStream : IWaveStream
 	{
 		private readonly WaveFormat _format;
 		private readonly NAudio.Wave.WaveStream _stream;

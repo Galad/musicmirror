@@ -15,39 +15,39 @@ namespace MusicMirror.Transcoding
 		private readonly string _witnessFilename;
 
 		public TagLibReaderWriterBase(
-			string witnessFilename,
+			string witnessFileName,
 			TagTypes tagTypes)
 		{
-			_witnessFilename = Guard.ForNullOrWhiteSpace(witnessFilename, nameof(witnessFilename));
+			_witnessFilename = Guard.ForNullOrWhiteSpace(witnessFileName, nameof(witnessFileName));
 			_tagTypes = tagTypes;
 		}
-		
+
 		public Task<Tag> ReadTags(CancellationToken ct, Stream stream)
 		{
 			Guard.ForNull(stream, nameof(stream));
 			return Task.Run(() =>
 			{
 				using (var fileAbstraction = new AlwaysOpenStreamFileAbstraction(_witnessFilename, stream))
+				using (var file = TagLib.File.Create(fileAbstraction))
 				{
-					var file = TagLib.File.Create(fileAbstraction);
 					return file.GetTag(_tagTypes, false);
 				}
 			});
 		}
 
-		public Task WriteTags(CancellationToken ct, Stream stream, Tag sourceTags)
+		public Task WriteTags(CancellationToken ct, Stream stream, Tag tags)
 		{
 			Guard.ForNull(stream, nameof(stream));
-			Guard.ForNull(sourceTags, nameof(sourceTags));
+			Guard.ForNull(tags, nameof(tags));
 			return Task.Run(() =>
 			{
 				using (var fileAbstraction = new AlwaysOpenStreamFileAbstraction(_witnessFilename, stream))
-				{
-					var file = TagLib.File.Create(fileAbstraction);
-					var tags = file.GetTag(_tagTypes, true);
-					tags.Clear();
-					sourceTags.CopyTo(tags, true);
-					tags.Pictures = sourceTags.Pictures;
+				using (var file = TagLib.File.Create(fileAbstraction))
+                {
+					var fileTags = file.GetTag(_tagTypes, true);
+					fileTags.Clear();
+					tags.CopyTo(fileTags, true);
+					fileTags.Pictures = tags.Pictures;
 					file.Save();
 				}
 			});
@@ -56,7 +56,7 @@ namespace MusicMirror.Transcoding
 
 	public class FlacTagLibReaderWriter : TagLibReaderWriterBase
 	{
-		public FlacTagLibReaderWriter() :base("file.flac", TagTypes.FlacMetadata)
+		public FlacTagLibReaderWriter() : base("file.flac", TagTypes.FlacMetadata)
 		{
 		}
 	}

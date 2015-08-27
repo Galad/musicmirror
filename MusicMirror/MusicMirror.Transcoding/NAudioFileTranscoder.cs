@@ -16,7 +16,6 @@ namespace MusicMirror.Transcoding
 		private readonly IAsyncFileOperations _asyncFileOperations;
 		private readonly IWaveStreamTranscoder _waveStreamTranscoder;
 		private readonly IAudioStreamReader _audioStreamReader;
-		private readonly IEnumerable<AudioFormat> _supportedFormats;
 		private readonly IAsyncDirectoryOperations _asyncDirectoryOperations;
 
 		public NAudioFileTranscoder(

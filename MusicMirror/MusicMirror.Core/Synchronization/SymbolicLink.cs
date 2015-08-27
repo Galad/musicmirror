@@ -9,7 +9,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace MusicMirror.Synchronization
 {
-	public static class SymbolicLink
+	internal static class SymbolicLinkNativeMethods
 	{
 		private const uint genericReadAccess = 0x80000000;
 
@@ -29,7 +29,7 @@ namespace MusicMirror.Synchronization
 
 		private const int targetIsADirectory = 1;
 
-		[DllImport("kernel32.dll", SetLastError = true)]
+		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		private static extern SafeFileHandle CreateFile(
 			string lpFileName,
 			uint dwDesiredAccess,
@@ -40,9 +40,11 @@ namespace MusicMirror.Synchronization
 			IntPtr hTemplateFile);
 
 		[DllImport("kernel32.dll", EntryPoint = "CreateSymbolicLinkW", CharSet = CharSet.Unicode, SetLastError = true)]
+		[return:MarshalAs(UnmanagedType.Bool)]
 		static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, int dwFlags);
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		[return:MarshalAs(UnmanagedType.Bool)]
 		private static extern bool DeviceIoControl(
 			IntPtr hDevice,
 			uint dwIoControlCode,
@@ -53,6 +55,7 @@ namespace MusicMirror.Synchronization
 			out int lpBytesReturned,
 			IntPtr lpOverlapped);
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		public static void CreateDirectoryLink(string linkPath, string targetPath)
 		{
 			if (!CreateSymbolicLink(linkPath, targetPath, targetIsADirectory) || Marshal.GetLastWin32Error() != 0)
@@ -112,9 +115,7 @@ namespace MusicMirror.Synchronization
 					bool success = DeviceIoControl(
 						fileHandle.DangerousGetHandle(), ioctlCommandGetReparsePoint, IntPtr.Zero, 0,
 						outBuffer, outBufferSize, out bytesReturned, IntPtr.Zero);
-
-					fileHandle.Close();
-
+										
 					if (!success)
 					{
 						if (((uint)Marshal.GetHRForLastWin32Error()) == pathNotAReparsePointError)
@@ -148,7 +149,7 @@ namespace MusicMirror.Synchronization
 	/// Refer to http://msdn.microsoft.com/en-us/library/windows/hardware/ff552012%28v=vs.85%29.aspx
 	/// </remarks>
 	[StructLayout(LayoutKind.Sequential)]
-	public struct SymbolicLinkReparseData
+	internal struct SymbolicLinkReparseData
 	{
 		// Not certain about this!
 		private const int maxUnicodePathLength = 260 * 2;

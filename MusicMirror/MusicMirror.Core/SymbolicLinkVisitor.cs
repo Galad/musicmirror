@@ -40,7 +40,7 @@ namespace MusicMirror
 			{
 				await _directoryOperations.CreateDirectory(targetDirectory.FullName);
 			}
-			SymbolicLink.CreateFileLink(targetFile, sourceFile.File.FullName);
+			SymbolicLinkNativeMethods.CreateFileLink(targetFile, sourceFile.File.FullName);
 		}
 	}
 	public sealed class CopyFileSynchronizer : IFileSynchronizer
@@ -98,9 +98,9 @@ namespace MusicMirror
 
 		public async Task Move(string sourcePath, string targetPath)
 		{
-			var symbolicLinkSource = SymbolicLink.GetTarget(sourcePath);
+			var symbolicLinkSource = SymbolicLinkNativeMethods.GetTarget(sourcePath);
 			await _defaultAsyncFileOperations.Delete(sourcePath);
-			SymbolicLink.CreateFileLink(targetPath, symbolicLinkSource);
+			SymbolicLinkNativeMethods.CreateFileLink(targetPath, symbolicLinkSource);
 		}
 
 		public async Task<Stream> Open(string path, Hanno.IO.FileMode fileMode, Hanno.IO.FileAccess fileAccess)
