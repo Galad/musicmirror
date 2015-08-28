@@ -50,6 +50,8 @@ namespace MusicMirror
 			_container = new UnityContainer();			
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Composition root")]
 		public ConfigurationPageViewModel Compose()
 		{
 			var schedulers = _schedulers();
@@ -104,18 +106,13 @@ namespace MusicMirror
 			viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
 			return viewModel;
 		}
-
-		public void Dispose()
-		{
-			_container.Dispose();
-		}
-
+				
 		public T Resolve<T>()
 		{
 			return _container.Resolve<T>();
 		}
 
-		private IFileTranscoder CreateTranscoder()
+		private static IFileTranscoder CreateTranscoder()
 		{
 			var transcoder = new TranscoderDispatch(new DebugFileTranscoder());
             transcoder.AddTranscoder(
@@ -134,8 +131,36 @@ namespace MusicMirror
 					new FlacTagLibReaderWriter(),
 					new MP3TagLibReaderWriter()
 				)),
-				AudioFormat.Flac);
+				AudioFormat.FLAC);
 			return new LoggingFileTranscoder(transcoder, LogManager.GetLogger(typeof(IFileTranscoder)));
 		}
+
+		#region IDisposable
+		bool disposed = false;
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		// Protected implementation of Dispose pattern. 
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposed)
+				return;
+
+			if (disposing)
+			{
+				_container.Dispose();
+				// Free any other managed objects here. 
+				//
+			}
+
+			// Free any unmanaged objects here. 
+			//
+			disposed = true;
+		}
+
+		#endregion
 	}
 }

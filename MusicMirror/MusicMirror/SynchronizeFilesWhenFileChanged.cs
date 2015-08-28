@@ -13,12 +13,12 @@ namespace MusicMirror
 {
 	public sealed class SynchronizeFilesWhenFileChanged : IObservable<Unit>
 	{
-		private readonly IObservable<Configuration> _configurationObservable;
+		private readonly IObservable<MusicMirrorConfiguration> _configurationObservable;
 		private readonly IFileObserverFactory _fileObserverFactory;
 		private readonly IFileSynchronizerVisitorFactory _fileSynchronizerVisitorFactory;
 
 		public SynchronizeFilesWhenFileChanged(
-			IObservable<Configuration> configurationObservable,
+			IObservable<MusicMirrorConfiguration> configurationObservable,
 			IFileObserverFactory fileObserverFactory,
 			IFileSynchronizerVisitorFactory fileSynchronizerVisitorFactory)
 		{
@@ -40,7 +40,7 @@ namespace MusicMirror
 				.Subscribe(observer);
 		}
 
-		private IObservable<Unit> ObserveFiles(Configuration configuration)
+		private IObservable<Unit> ObserveFiles(MusicMirrorConfiguration configuration)
 		{
 			var visitor = _fileSynchronizerVisitorFactory.CreateVisitor(configuration);
 			return _fileObserverFactory.GetFileObserver(configuration.SourcePath)

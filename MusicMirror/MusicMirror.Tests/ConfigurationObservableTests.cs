@@ -21,7 +21,7 @@ namespace MusicMirror.Tests
 		public void Sut_IsIObservable(
 		  ConfigurationObservable sut)
 		{
-			sut.Should().BeAssignableTo<IObservable<Configuration>>();
+			sut.Should().BeAssignableTo<IObservable<MusicMirrorConfiguration>>();
 		}
 
 		[Theory, AutoMoqData]
@@ -36,7 +36,7 @@ namespace MusicMirror.Tests
 			[Frozen]Mock<ISettingsService> settingsService,
 			ConfigurationObservable sut,
 			TestScheduler scheduler,
-			Configuration expected)
+			MusicMirrorConfiguration expected)
 		{
 			//arrange
 			settingsService.Setup(s => s.ObserveValue(ConfigurationObservable.SourcePathKey, It.IsAny<Func<string>>()))
@@ -54,7 +54,7 @@ namespace MusicMirror.Tests
 			[Frozen]Mock<ISettingsService> settingsService,
 			ConfigurationObservable sut,
 			TestScheduler scheduler,
-			Configuration expected)
+			MusicMirrorConfiguration expected)
 		{
 			//arrange
 			settingsService.Setup(s => s.ObserveValue(ConfigurationObservable.SourcePathKey, It.IsAny<Func<string>>()))
@@ -89,7 +89,7 @@ namespace MusicMirror.Tests
 						   .Returns<string, Func<string>>((key, defaultValue) => scheduler.CreateColdObservable(
 							OnNext(0, defaultValue())
 							));
-			var expected = new Configuration(null, null, NonTranscodingFilesBehavior.Copy);
+			var expected = new MusicMirrorConfiguration(null, null, NonTranscodingFilesBehavior.Copy);
 			//act
 			var result = scheduler.Start(() => sut);
 			//assert

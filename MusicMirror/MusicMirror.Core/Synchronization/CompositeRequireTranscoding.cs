@@ -10,14 +10,14 @@ namespace MusicMirror.Synchronization
 {
 	public class CompositeRequireTranscoding : IRequireTranscoding
 	{
-		private readonly IEnumerable<IRequireTranscoding> _requireTranscodings;
+		private readonly IEnumerable<IRequireTranscoding> _innerRequireTranscoding;
 
-		public CompositeRequireTranscoding(IEnumerable<IRequireTranscoding> requireTranscodings)
+		public CompositeRequireTranscoding(IEnumerable<IRequireTranscoding> innerRequireTranscoding)
 		{
-			this._requireTranscodings = Guard.ForNull(requireTranscodings, nameof(requireTranscodings));
+			this._innerRequireTranscoding = Guard.ForNull(innerRequireTranscoding, nameof(innerRequireTranscoding));
 		}
 
-		public IEnumerable<IRequireTranscoding> RequireTranscodings { get { return _requireTranscodings; } }
+		public IEnumerable<IRequireTranscoding> InnerRequireTranscoding { get { return _innerRequireTranscoding; } }
 
         public Task<bool> ForFile(CancellationToken ct, FileInfo file)
 		{
@@ -27,7 +27,7 @@ namespace MusicMirror.Synchronization
 
 		private async Task<bool> ForFileInternal(CancellationToken ct, FileInfo file)
 		{
-			foreach (var t in _requireTranscodings)
+			foreach (var t in _innerRequireTranscoding)
 			{
 				if (await t.ForFile(ct, file))
 				{

@@ -10,7 +10,7 @@ namespace MusicMirror.Entities
 		Ignore
 	}
 
-	public sealed class Configuration : IEquatable<Configuration>
+	public class MusicMirrorConfiguration : IEquatable<MusicMirrorConfiguration>
 	{
 		#region Equality
 		public override bool Equals(object obj)
@@ -18,10 +18,10 @@ namespace MusicMirror.Entities
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
 			if (obj.GetType() != this.GetType()) return false;
-			return Equals((Configuration)obj);
+			return Equals((MusicMirrorConfiguration)obj);
 		}
 
-		public bool Equals(Configuration other)
+		public bool Equals(MusicMirrorConfiguration other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
@@ -36,14 +36,14 @@ namespace MusicMirror.Entities
 			}
 		}
 
-		public static bool operator ==(Configuration c1, Configuration c2)
+		public static bool operator ==(MusicMirrorConfiguration c1, MusicMirrorConfiguration c2)
 		{
 			if (ReferenceEquals(null, c1) && ReferenceEquals(null, c2)) return true;
 			if (ReferenceEquals(null, c1)) return false;
 			return c1.Equals(c2);
 		}
 
-		public static bool operator !=(Configuration c1, Configuration c2)
+		public static bool operator !=(MusicMirrorConfiguration c1, MusicMirrorConfiguration c2)
 		{
 			return !(c1 == c2);
 		}
@@ -54,7 +54,7 @@ namespace MusicMirror.Entities
 		private readonly DirectoryInfo _targetPath;
 		private readonly NonTranscodingFilesBehavior _nonTranscodingFilesBehavior;
 
-		public Configuration(DirectoryInfo sourcePath, DirectoryInfo targetPath, NonTranscodingFilesBehavior nonTranscodingFilesBehavior)
+		public MusicMirrorConfiguration(DirectoryInfo sourcePath, DirectoryInfo targetPath, NonTranscodingFilesBehavior nonTranscodingFilesBehavior)
 		{
 			_sourcePath = sourcePath;
 			_targetPath = targetPath;

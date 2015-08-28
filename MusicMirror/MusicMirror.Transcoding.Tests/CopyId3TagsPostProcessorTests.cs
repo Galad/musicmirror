@@ -35,13 +35,13 @@ namespace MusicMirror.Transcoding.Tests
 			[Frozen]Mock<IFileTranscoder> innerFileTranscoder,
 			CopyId3TagsPostProcessor sut,
 			SourceFilePath sourceFile,
-			Configuration configuration)
+			MusicMirrorConfiguration configuration)
 		{
 			//arrange
 			//act
-			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.Flac, configuration.TargetPath);
+			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.FLAC, configuration.TargetPath);
 			//assert
-			innerFileTranscoder.Verify(f => f.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.Flac, configuration.TargetPath));
+			innerFileTranscoder.Verify(f => f.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.FLAC, configuration.TargetPath));
 		}
 		
 		[Theory, FileAutoData]
@@ -55,7 +55,7 @@ namespace MusicMirror.Transcoding.Tests
 			//arrange
 			innerFileTranscoder.Setup(f => f.GetTranscodedFileName(sourceFile.File.Name)).Returns(targetFile.File.Name);			
 			//act
-			await sut.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.Flac, targetFile.File.Directory);
+			await sut.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.FLAC, targetFile.File.Directory);
 			//assert
 			audioTagsSynchronizer.Verify(
 				a => a.SynchronizeTags(

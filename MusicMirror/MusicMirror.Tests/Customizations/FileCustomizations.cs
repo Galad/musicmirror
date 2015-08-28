@@ -25,18 +25,18 @@ namespace MusicMirror.Tests.Customizations
 		public void Customize(IFixture fixture)
 		{
 			fixture.Customize<string>(c => c.FromFactory(() => GuidGenerator.Create().ToString().Substring(0, 8)));
-			fixture.Register(() => new Configuration(new DirectoryInfo(@"C:\Music"), new DirectoryInfo(@"D:\OneDrive\Music"), NonTranscodingFilesBehavior.Copy));
-			fixture.Freeze<Configuration>();
+			fixture.Register(() => new MusicMirrorConfiguration(new DirectoryInfo(@"C:\Music"), new DirectoryInfo(@"D:\OneDrive\Music"), NonTranscodingFilesBehavior.Copy));
+			fixture.Freeze<MusicMirrorConfiguration>();
 			fixture.Register(() => CreateFilePath(SourceFilePath.CreateFromPathWithoutExtension, fixture));
 			fixture.Register(() => CreateFilePath(TargetFilePath.CreateFromPathWithoutExtension, fixture));
-			fixture.Register<IEnumerable<AudioFormat>>(() => new[] { AudioFormat.MP3, AudioFormat.Flac });
+			fixture.Register<IEnumerable<AudioFormat>>(() => new[] { AudioFormat.MP3, AudioFormat.FLAC });
 			fixture.Register<Stream>(() => fixture.Create<MemoryStream>());										
 		}
 
-		private T CreateFilePath<T>(Func<Configuration, string[], T> createFilePath, IFixture fixture) where T : FilePathBase
+		private T CreateFilePath<T>(Func<MusicMirrorConfiguration, string[], T> createFilePath, IFixture fixture) where T : FilePathBase
 		{
 			var folderParts = fixture.Create<string[]>();
-			var config = fixture.Create<Configuration>();
+			var config = fixture.Create<MusicMirrorConfiguration>();
 			return createFilePath(config, folderParts);
 		}
 	}

@@ -14,7 +14,7 @@ namespace MusicMirror.Tests.Customizations
 		}
 
 		public static SourceFilePath CreateFromPathWithoutExtension(
-			Configuration config, 
+			MusicMirrorConfiguration config, 
 			string[] relativePathParts)
 		{
 			return new SourceFilePath(

@@ -13,22 +13,22 @@ namespace MusicMirror
 	[CLSCompliant(false)]
 	public interface IAudioStreamReader
 	{
-		Task<IWaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format);
+		Task<IWaveStreamProvider> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format);
 	}
 
 	[CLSCompliant(false)]
-	public interface IWaveStream : IWaveProvider, IDisposable
+	public interface IWaveStreamProvider : IWaveProvider, IDisposable
 	{		
 		Stream Stream { get; }	
 	}
 
 	[CLSCompliant(false)]
-	public sealed class WaveStreamWrapper : IWaveStream
+	public sealed class WaveStreamProvider : IWaveStreamProvider
 	{
 		private readonly WaveFormat _format;
 		private readonly NAudio.Wave.WaveStream _stream;
 
-		public WaveStreamWrapper(NAudio.Wave.WaveStream stream, WaveFormat format)
+		public WaveStreamProvider(NAudio.Wave.WaveStream stream, WaveFormat format)
 		{
 			if (stream == null) throw new ArgumentNullException(nameof(stream));
 			if (format == null) throw new ArgumentNullException(nameof(format));
@@ -75,13 +75,13 @@ namespace MusicMirror
 			_audioStreamReaders[format] = audioStreamReader;
 		}
 
-		public Task<IWaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format)
+		public Task<IWaveStreamProvider> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format)
 		{
 			if (format == null) throw new ArgumentNullException(nameof(format));
 			return ReadWaveInternal(ct, sourceStream, format);
 		}
 
-		private async Task<IWaveStream> ReadWaveInternal(CancellationToken ct, Stream sourceStream, AudioFormat format)
+		private async Task<IWaveStreamProvider> ReadWaveInternal(CancellationToken ct, Stream sourceStream, AudioFormat format)
 		{
 			IAudioStreamReader reader;
 			if (_audioStreamReaders.TryGetValue(format, out reader))

@@ -16,7 +16,7 @@ namespace MusicMirror.Transcoding
 	public interface IWaveStreamTranscoder
 	{
 		string GetTranscodedFileName(string sourceFileName);
-		Task Transcode(CancellationToken ct, IWaveStream stream, Stream targetStream);
+		Task Transcode(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream);
 	}
 
 	public sealed class WaveToMP3Transcoder : IWaveStreamTranscoder
@@ -26,14 +26,14 @@ namespace MusicMirror.Transcoding
 			return Path.ChangeExtension(sourceFileName, AudioFormat.MP3.DefaultExtension);
 		}
 
-		public Task Transcode(CancellationToken ct, IWaveStream stream, Stream targetStream)
+		public Task Transcode(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream)
 		{
 			if (stream == null) throw new ArgumentNullException(nameof(stream));
 			if (targetStream == null) throw new ArgumentNullException(nameof(targetStream));
 			return TranscodeInternal(ct, stream, targetStream);
 		}
 
-		public static async Task TranscodeInternal(CancellationToken ct, IWaveStream stream, Stream targetStream)
+		public static async Task TranscodeInternal(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream)
 		{
 			using (var mp3Writer = new NAudio.Lame.LameMP3FileWriter(targetStream, stream.WaveFormat, NAudio.Lame.LAMEPreset.ABR_320))
 			{				
@@ -56,14 +56,14 @@ namespace MusicMirror.Transcoding
 			return Path.ChangeExtension(sourceFileName, AudioFormat.MP3.DefaultExtension);
 		}
 
-		public Task Transcode(CancellationToken ct, IWaveStream stream, Stream targetStream)
+		public Task Transcode(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream)
 		{
 			if (stream == null) throw new ArgumentNullException(nameof(stream));
 			if (targetStream == null) throw new ArgumentNullException(nameof(targetStream));
 			return TranscodeInternal(ct, stream, targetStream);
 		}
 
-		public async Task TranscodeInternal(CancellationToken ct, IWaveStream stream, Stream targetStream)
+		public async Task TranscodeInternal(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream)
 		{
 			await Task.Run(() =>
 			{				
@@ -97,7 +97,7 @@ namespace MusicMirror.Transcoding
 			return Path.ChangeExtension(sourceFileName, ".wav");
 		}
 
-		public async Task Transcode(CancellationToken ct, IWaveStream stream, Stream targetStream)
+		public async Task Transcode(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream)
 		{
 			using (var fileWriter = new NAudio.Wave.WaveFileWriter(targetStream, stream.WaveFormat))
 			{				

@@ -38,7 +38,7 @@ namespace MusicMirror.Tests
 		public async Task Synchronize_WhenLastSynchronizationTimeIsOlderThanFileModificationDate_ShouldCallTranscode(
 			[Frozen]Mock<ISynchronizedFilesRepository> synchronizedFileRepository,
 			[Frozen]Mock<IFileTranscoder> fileTranscoder,
-			Configuration config,
+			MusicMirrorConfiguration config,
 			FileSynchronizer sut,
 			SourceFilePath sourceFile,
 			TargetFilePath targetFile)
@@ -56,7 +56,7 @@ namespace MusicMirror.Tests
 				f.Transcode(
 					It.IsAny<CancellationToken>(),
 					sourceFile.File,
-					AudioFormat.Flac,
+					AudioFormat.FLAC,
                     It.Is((DirectoryInfo d) => d.FullName.Equals(targetFile.File.DirectoryName))));
 		}
 
@@ -65,7 +65,7 @@ namespace MusicMirror.Tests
 			double daysToAdd,
 			[Frozen]Mock<ISynchronizedFilesRepository> synchronizedFileRepository,
 			[Frozen]Mock<IFileTranscoder> fileTranscoder,
-			Configuration config,
+			MusicMirrorConfiguration config,
 			FileSynchronizer sut,
 			SourceFilePath sourceFile,
 			TargetFilePath targetFile)
@@ -83,7 +83,7 @@ namespace MusicMirror.Tests
 				f.Transcode(
 					It.IsAny<CancellationToken>(),
 					sourceFile.File,
-					AudioFormat.Flac,
+					AudioFormat.FLAC,
 					It.Is((DirectoryInfo d) => d.FullName.Equals(targetFile.File.DirectoryName))),
 				Times.Never());
 		}
@@ -92,7 +92,7 @@ namespace MusicMirror.Tests
 		public async Task Synchronize_WhenFormatIsUknown_ShouldNotCallTranscode(
 		[Frozen]Mock<ISynchronizedFilesRepository> synchronizedFileRepository,
 		[Frozen]Mock<IFileTranscoder> fileTranscoder,
-		Configuration config,
+		MusicMirrorConfiguration config,
 		FileSynchronizer sut,
 		TargetFilePath targetFile)
 		{

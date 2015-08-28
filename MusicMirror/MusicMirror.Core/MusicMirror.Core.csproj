@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\MusicMirror\MusicMirror.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -101,6 +101,9 @@
     <Compile Include="TranscoderDispatch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="..\MusicMirror\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </Resource>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +111,11 @@
       <Project>{95f457ec-1637-4c0d-8428-786e7cf1204d}</Project>
       <Name>MusicMirror.Abstractions</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\MusicMirror\MusicMirror.ruleset">
+      <Link>MusicMirror.ruleset</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
