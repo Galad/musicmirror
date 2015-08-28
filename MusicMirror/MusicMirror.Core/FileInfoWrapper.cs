@@ -20,7 +20,7 @@ namespace MusicMirror
 		public DateTimeOffset LastWriteTime { get { return new DateTimeOffset(_file.LastWriteTimeUtc); } }
 		public FileInfo File { get { return _file; } }
 
-		public bool IsReadonly
+		public bool IsReadOnly
 		{
 			get
 			{

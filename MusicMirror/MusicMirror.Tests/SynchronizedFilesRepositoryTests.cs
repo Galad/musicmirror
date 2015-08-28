@@ -44,7 +44,7 @@ namespace MusicMirror.Tests
 		[Theory, FileAutoData]
 		public async Task GetMirroredFilePath_ShouldReturnCorrectValue(
 			[Frozen]Mock<IFileTranscoder> fileTranscoder,
-			Configuration configuration,
+			MusicMirrorConfiguration configuration,
 			SynchronizedFilesRepository sut,
 			SourceFilePath fileInfo,
 			TargetFilePath expectedFile)

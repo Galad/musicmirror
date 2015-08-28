@@ -12,13 +12,13 @@ namespace MusicMirror.Synchronization
 	public class SynchronizeFileService : IMirroredFolderOperations
 	{
 		private readonly IAsyncFileOperations _asyncFileOperations;
-		private readonly Configuration _configuration;
+		private readonly MusicMirrorConfiguration _configuration;
 		private readonly IFileSynchronizer _fileSynchronizer;
 		private readonly ISynchronizedFilesRepository _synchronizedFilesRepository;
 
 		public SynchronizeFileService(
 			IAsyncFileOperations asyncFileOperations,
-			Configuration configuration,
+			MusicMirrorConfiguration configuration,
 			IFileSynchronizer fileSynchronizer,
 			ISynchronizedFilesRepository synchronizedFilesRepository)
 		{
@@ -33,7 +33,7 @@ namespace MusicMirror.Synchronization
 		}
 
 		public IAsyncFileOperations AsyncFileOperations { get { return _asyncFileOperations; } }
-		public Configuration Configuration { get { return _configuration; } }
+		public MusicMirrorConfiguration Configuration { get { return _configuration; } }
 		public IFileSynchronizer FileSynchronizer { get { return _fileSynchronizer; } }
 		public ISynchronizedFilesRepository SynchronizedFilesRepository { get { return _synchronizedFilesRepository; } }
 

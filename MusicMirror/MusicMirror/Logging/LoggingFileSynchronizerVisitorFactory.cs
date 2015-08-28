@@ -20,9 +20,9 @@ namespace MusicMirror.Logging
 			_log = Guard.ForNull(log, nameof(log));
 		}
 
-		public IFileSynchronizerVisitor CreateVisitor(Configuration targetDirectory)
+		public IFileSynchronizerVisitor CreateVisitor(MusicMirrorConfiguration configuration)
 		{
-			return new LoggingFileSynchronizerVisitor(_innerFactory.CreateVisitor(targetDirectory), _log);
+			return new LoggingFileSynchronizerVisitor(_innerFactory.CreateVisitor(configuration), _log);
 		}
 	}
 

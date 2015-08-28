@@ -31,7 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\MusicMirror\MusicMirror.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,6 +53,7 @@
     <Compile Include="FileNotificationBase.cs" />
     <Compile Include="FileNotificationKind.cs" />
     <Compile Include="FileRenamedNotification.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="IAudioTagsSynchronizer.cs" />
     <Compile Include="IFileInfo.cs" />
@@ -68,7 +70,16 @@
     <Compile Include="Synchronization\IRequireTranscoding.cs" />
     <Compile Include="Synchronization\ISynchronizedFilesRepository.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="..\MusicMirror\MusicMirror.ruleset">
+      <Link>MusicMirror.ruleset</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\MusicMirror\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </Resource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -30,6 +30,7 @@ namespace MusicMirror
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		public MainWindow()
 		{
 			InitializeComponent();

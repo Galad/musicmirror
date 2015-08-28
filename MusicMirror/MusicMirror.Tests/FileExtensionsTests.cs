@@ -25,7 +25,7 @@ namespace MusicMirror.Tests
 		[Theory, FileAutoData]
 		public void GetDirectoryFromSourceFile_ShouldReturnCorrectValue(
 			SourceFilePath sourceFile,
-			Configuration configuration)
+			MusicMirrorConfiguration configuration)
 		{
 			//arrange
 			var expected = Path.Combine(configuration.TargetPath.FullName, sourceFile.RelativePath);

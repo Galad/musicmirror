@@ -19,6 +19,6 @@ namespace MusicMirror
 		/// <summary>
 		/// Indicates wether the file is read only
 		/// </summary>
-		bool IsReadonly { get; }
+		bool IsReadOnly { get; }
 	}	
 }

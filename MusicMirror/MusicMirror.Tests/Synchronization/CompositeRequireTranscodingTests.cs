@@ -133,7 +133,7 @@ namespace MusicMirror.Tests.Synchronization
 			var requireTranscoding = fixture.CreateMany<IRequireTranscoding>(count + 2).ToArray();
 			fixture.Inject<IEnumerable<IRequireTranscoding>>(requireTranscoding);
 			var sut = fixture.Create<CompositeRequireTranscoding>();
-			foreach (var t in sut.RequireTranscodings)
+			foreach (var t in sut.InnerRequireTranscoding)
 			{
 				Mock.Get(t).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(false);
 			}
@@ -153,11 +153,11 @@ namespace MusicMirror.Tests.Synchronization
 			var requireTranscoding = fixture.CreateMany<IRequireTranscoding>(count + 2).ToArray();
 			fixture.Inject<IEnumerable<IRequireTranscoding>>(requireTranscoding);
 			var sut = fixture.Create<CompositeRequireTranscoding>();
-			foreach (var t in sut.RequireTranscodings)
+			foreach (var t in sut.InnerRequireTranscoding)
 			{
 				Mock.Get(t).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(false);
 			}
-			Mock.Get(sut.RequireTranscodings.First()).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(true);
+			Mock.Get(sut.InnerRequireTranscoding.First()).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(true);
 			//act
 			var actual = await sut.ForFile(CancellationToken.None, file.File);
 			//assert
@@ -174,11 +174,11 @@ namespace MusicMirror.Tests.Synchronization
 			var requireTranscoding = fixture.CreateMany<IRequireTranscoding>(count + 2).ToArray();
 			fixture.Inject<IEnumerable<IRequireTranscoding>>(requireTranscoding);
 			var sut = fixture.Create<CompositeRequireTranscoding>();
-			foreach (var t in sut.RequireTranscodings)
+			foreach (var t in sut.InnerRequireTranscoding)
 			{
 				Mock.Get(t).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(false);
 			}
-			Mock.Get(sut.RequireTranscodings.Last()).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(true);
+			Mock.Get(sut.InnerRequireTranscoding.Last()).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(true);
 			//act
 			var actual = await sut.ForFile(CancellationToken.None, file.File);
 			//assert
@@ -195,11 +195,11 @@ namespace MusicMirror.Tests.Synchronization
 			var requireTranscoding = fixture.CreateMany<IRequireTranscoding>(count + 2).ToArray();
 			fixture.Inject<IEnumerable<IRequireTranscoding>>(requireTranscoding);
 			var sut = fixture.Create<CompositeRequireTranscoding>();
-			foreach (var t in sut.RequireTranscodings)
+			foreach (var t in sut.InnerRequireTranscoding)
 			{
 				Mock.Get(t).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(false);
 			}
-			Mock.Get(sut.RequireTranscodings.ElementAt(count /2)).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(true);
+			Mock.Get(sut.InnerRequireTranscoding.ElementAt(count /2)).Setup(m => m.ForFile(It.IsAny<CancellationToken>(), file.File)).ReturnsTask(true);
 			//act
 			var actual = await sut.ForFile(CancellationToken.None, file.File);
 			//assert

@@ -40,10 +40,10 @@ namespace MusicMirror.Transcoding.Tests
 			 [Frozen]Mock<IAudioStreamReader> audioStreamReader,
 			 [Frozen]Mock<IAsyncFileOperations> asyncFileOperations,
 			 NAudioFileTranscoder sut,
-			 Configuration config,
+			 MusicMirrorConfiguration config,
 			 SourceFilePath sourceFile,
 			 TargetFilePath targetFile,
-			 IWaveStream waveStream,
+			 IWaveStreamProvider waveStream,
 			 Stream sourceStream,
 			 Stream targetStream)
 		{
@@ -51,10 +51,10 @@ namespace MusicMirror.Transcoding.Tests
 			waveStreamTranscoder.Setup(t => t.GetTranscodedFileName(sourceFile.File.Name)).Returns(targetFile.File.Name);
 			asyncFileOperations.Setup(f => f.OpenRead(sourceFile.ToString())).ReturnsTask(sourceStream);
 			asyncFileOperations.Setup(f => f.OpenWrite(Path.Combine(config.TargetPath.FullName, targetFile.File.Name))).ReturnsTask(targetStream);
-			audioStreamReader.Setup(a => a.ReadWave(It.IsAny<CancellationToken>(), sourceStream, AudioFormat.Flac))
+			audioStreamReader.Setup(a => a.ReadWave(It.IsAny<CancellationToken>(), sourceStream, AudioFormat.FLAC))
 				.ReturnsTask(waveStream);
 			//act
-			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.Flac, config.TargetPath);
+			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.FLAC, config.TargetPath);
 			//assert
 			waveStreamTranscoder.Verify(t => t.Transcode(It.IsAny<CancellationToken>(), waveStream, targetStream));
 		}
@@ -68,14 +68,14 @@ namespace MusicMirror.Transcoding.Tests
 			 bool shouldCallCreateDirectory,
 			 [Frozen]Mock<IAsyncDirectoryOperations> asyncDirectoryOperations,
 			 NAudioFileTranscoder sut,
-			 Configuration config,
+			 MusicMirrorConfiguration config,
 			 SourceFilePath sourceFile,
 			 IFixture fixture)
 		{			
 			//arrange
 			asyncDirectoryOperations.Setup(d => d.Exists(config.TargetPath.FullName)).ReturnsTask(exist);
 			//act
-			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.Flac, config.TargetPath);
+			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.FLAC, config.TargetPath);
 			//assetr
 			asyncDirectoryOperations.VerifyOnce(d => d.CreateDirectory(config.TargetPath.FullName), shouldCallCreateDirectory);
 		}

@@ -6,6 +6,6 @@ namespace MusicMirror
 {
 	public interface IFileSynchronizerVisitorFactory
 	{
-		IFileSynchronizerVisitor CreateVisitor(Configuration configuration);
+		IFileSynchronizerVisitor CreateVisitor(MusicMirrorConfiguration configuration);
 	}
 }

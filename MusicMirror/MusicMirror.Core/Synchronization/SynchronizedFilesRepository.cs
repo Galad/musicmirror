@@ -10,12 +10,12 @@ namespace MusicMirror.Synchronization
 	public class SynchronizedFilesRepository : ISynchronizedFilesRepository
 	{
 		private readonly IFileTranscoder _fileTranscoder;
-		private readonly Configuration _configuration;
+		private readonly MusicMirrorConfiguration _configuration;
 		private readonly ConcurrentDictionary<string, DateTimeOffset> _synchronizations;
 
 		public SynchronizedFilesRepository(
 			IFileTranscoder fileTranscoder,
-			Configuration configuration)
+			MusicMirrorConfiguration configuration)
 		{
 			if (fileTranscoder == null) throw new ArgumentNullException(nameof(fileTranscoder));
 			if (configuration == null) throw new ArgumentNullException(nameof(configuration));
@@ -26,7 +26,7 @@ namespace MusicMirror.Synchronization
 
 		public IFileTranscoder FileTranscoder { get { return _fileTranscoder; } }
 
-		public Configuration Configuration { get { return _configuration; } }
+		public MusicMirrorConfiguration Configuration { get { return _configuration; } }
 
 		public Task AddSynchronization(CancellationToken ct, FileInfo sourceFile, DateTimeOffset synchronizationTime)
 		{

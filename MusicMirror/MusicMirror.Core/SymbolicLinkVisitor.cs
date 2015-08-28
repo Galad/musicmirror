@@ -15,10 +15,10 @@ namespace MusicMirror
 	{
 		private readonly IAsyncDirectoryOperations _directoryOperations;
 		private readonly IAsyncFileOperations _fileOperations;
-		private readonly Configuration _configuration;
+		private readonly MusicMirrorConfiguration _configuration;
 
 		public SymbolicLinkFileSynchronizer(
-			Configuration configuration,
+			MusicMirrorConfiguration configuration,
 			IAsyncFileOperations fileOperations,
 			IAsyncDirectoryOperations directoryOperations)
 		{
@@ -46,10 +46,10 @@ namespace MusicMirror
 	public sealed class CopyFileSynchronizer : IFileSynchronizer
 	{
 		private readonly IAsyncDirectoryOperations _directoryOperations;
-		private readonly Configuration _configuration;
+		private readonly MusicMirrorConfiguration _configuration;
 
 		public CopyFileSynchronizer(
-			Configuration configuration,
+			MusicMirrorConfiguration configuration,
 			IAsyncDirectoryOperations directoryOperations)
 		{
 			_configuration = Guard.ForNull(configuration, nameof(configuration));

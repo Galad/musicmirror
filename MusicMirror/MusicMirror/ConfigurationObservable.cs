@@ -8,7 +8,7 @@ using MusicMirror.Entities;
 
 namespace MusicMirror
 {
-	public class ConfigurationObservable : IObservable<Configuration>
+	public class ConfigurationObservable : IObservable<MusicMirrorConfiguration>
 	{
 		private readonly ISettingsService _settingsService;
 		public const string SourcePathKey = "SourcePath";
@@ -20,9 +20,9 @@ namespace MusicMirror
 			_settingsService = settingsService;
 		}
 
-		public IDisposable Subscribe(IObserver<Configuration> observer)
+		public IDisposable Subscribe(IObserver<MusicMirrorConfiguration> observer)
 		{
-			return ObserveSettingsPath(SourcePathKey).CombineLatest(ObserveSettingsPath(TargetPathKey), (s1, s2) => new Configuration(s1, s2, NonTranscodingFilesBehavior.Copy))
+			return ObserveSettingsPath(SourcePathKey).CombineLatest(ObserveSettingsPath(TargetPathKey), (s1, s2) => new MusicMirrorConfiguration(s1, s2, NonTranscodingFilesBehavior.Copy))
 			                                        .Subscribe(observer);
 		}
 

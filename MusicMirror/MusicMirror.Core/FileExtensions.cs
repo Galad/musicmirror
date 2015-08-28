@@ -6,7 +6,7 @@ namespace MusicMirror
 {
 	public static class FileExtensions
 	{
-		public static DirectoryInfo GetDirectoryFromSourceFile(this FileSystemInfo sourceFile, Configuration configuration)
+		public static DirectoryInfo GetDirectoryFromSourceFile(this FileSystemInfo sourceFile, MusicMirrorConfiguration configuration)
 		{
 			if (sourceFile == null) throw new ArgumentNullException(nameof(sourceFile));
 			if (configuration == null) throw new ArgumentNullException(nameof(configuration));

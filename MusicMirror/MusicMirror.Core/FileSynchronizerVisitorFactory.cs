@@ -15,7 +15,7 @@ namespace MusicMirror
 			_transcoder = transcoder;
 		}
 
-		public IFileSynchronizerVisitor CreateVisitor(Configuration configuration)
+		public IFileSynchronizerVisitor CreateVisitor(MusicMirrorConfiguration configuration)
 		{
 			var fileSynchronizerRepository = new SynchronizedFilesRepository(
 				_transcoder,
@@ -53,7 +53,7 @@ namespace MusicMirror
 			}
 		}
 
-		private static IFileSynchronizer GetSynchronizer(Configuration configuration, IAsyncFileOperations fileOperations, IAsyncDirectoryOperations directoryOperations)
+		private static IFileSynchronizer GetSynchronizer(MusicMirrorConfiguration configuration, IAsyncFileOperations fileOperations, IAsyncDirectoryOperations directoryOperations)
 		{
 			switch (configuration.NonTranscodingFilesBehavior)
 			{

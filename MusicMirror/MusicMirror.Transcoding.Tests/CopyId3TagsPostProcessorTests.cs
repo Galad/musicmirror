@@ -18,7 +18,7 @@ namespace MusicMirror.Transcoding.Tests
 	{
 		[Theory, FileAutoData]
 		public void Sut_ShouldBeIFileTranscoder(
-		  CopyId3TagsPostProcessor sut)
+		  CopyId3TagsPostprocessor sut)
 		{
 			sut.Should().BeAssignableTo<IFileTranscoder>();
 		}
@@ -27,35 +27,35 @@ namespace MusicMirror.Transcoding.Tests
 		public void Sut_VerifyGuardClauses(
 		  GuardClauseAssertion assertion)
 		{
-			assertion.VerifyType<CopyId3TagsPostProcessor>();
+			assertion.VerifyType<CopyId3TagsPostprocessor>();
 		}
 
 		[Theory, FileAutoData]
 		public async Task Synchronize_ShouldCallInnerSynchronize(
 			[Frozen]Mock<IFileTranscoder> innerFileTranscoder,
-			CopyId3TagsPostProcessor sut,
+			CopyId3TagsPostprocessor sut,
 			SourceFilePath sourceFile,
-			Configuration configuration)
+			MusicMirrorConfiguration configuration)
 		{
 			//arrange
 			//act
-			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.Flac, configuration.TargetPath);
+			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.FLAC, configuration.TargetPath);
 			//assert
-			innerFileTranscoder.Verify(f => f.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.Flac, configuration.TargetPath));
+			innerFileTranscoder.Verify(f => f.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.FLAC, configuration.TargetPath));
 		}
 		
 		[Theory, FileAutoData]
 		public async Task Synchronize_ShouldCallAudioTagsSynchronizer(
 			[Frozen]Mock<IFileTranscoder> innerFileTranscoder,
 			[Frozen]Mock<IAudioTagsSynchronizer> audioTagsSynchronizer,
-			CopyId3TagsPostProcessor sut,
+			CopyId3TagsPostprocessor sut,
 			SourceFilePath sourceFile,
 			TargetFilePath targetFile)
 		{
 			//arrange
 			innerFileTranscoder.Setup(f => f.GetTranscodedFileName(sourceFile.File.Name)).Returns(targetFile.File.Name);			
 			//act
-			await sut.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.Flac, targetFile.File.Directory);
+			await sut.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.FLAC, targetFile.File.Directory);
 			//assert
 			audioTagsSynchronizer.Verify(
 				a => a.SynchronizeTags(

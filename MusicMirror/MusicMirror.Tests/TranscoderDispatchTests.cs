@@ -75,9 +75,9 @@ namespace MusicMirror.Tests
 			//arrange
 			sut.AddTranscoder(fileTranscoder.Object, new AudioFormat("test", "test", file.File.Extension, LossKind.Lossless));
 			//act
-			await sut.Transcode(CancellationToken.None, file.File, AudioFormat.Flac, directory);
+			await sut.Transcode(CancellationToken.None, file.File, AudioFormat.FLAC, directory);
 			//assert
-			fileTranscoder.Verify(f => f.Transcode(CancellationToken.None, file.File, AudioFormat.Flac, directory));
+			fileTranscoder.Verify(f => f.Transcode(CancellationToken.None, file.File, AudioFormat.FLAC, directory));
 		}
 
 		[Theory, FileAutoData]
@@ -89,9 +89,9 @@ namespace MusicMirror.Tests
 		{
 			//arrange
 			//act
-			await sut.Transcode(CancellationToken.None, file.File, AudioFormat.Flac, directory);
+			await sut.Transcode(CancellationToken.None, file.File, AudioFormat.FLAC, directory);
 			//assert
-			fileTranscoder.Verify(f => f.Transcode(CancellationToken.None, file.File, AudioFormat.Flac, directory));
+			fileTranscoder.Verify(f => f.Transcode(CancellationToken.None, file.File, AudioFormat.FLAC, directory));
 		}
 	}
 }

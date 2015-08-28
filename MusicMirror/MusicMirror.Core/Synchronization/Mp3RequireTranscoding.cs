@@ -42,7 +42,7 @@ namespace MusicMirror.Synchronization
 
 	public sealed class FlacRequireTranscoding : FileExtensionRequireTranscoding
 	{
-		public FlacRequireTranscoding() : base(AudioFormat.Flac.AllExtensions.ToArray())
+		public FlacRequireTranscoding() : base(AudioFormat.FLAC.AllExtensions.ToArray())
 		{
 		}
 

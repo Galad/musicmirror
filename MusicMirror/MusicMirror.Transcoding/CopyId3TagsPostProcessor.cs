@@ -10,12 +10,12 @@ using NAudio.Flac;
 
 namespace MusicMirror.Transcoding
 {
-	public class CopyId3TagsPostProcessor : IFileTranscoder
+	public class CopyId3TagsPostprocessor : IFileTranscoder
 	{
 		private readonly IFileTranscoder _innerTranscoder;
 		private readonly IAudioTagsSynchronizer _audioTagsSynchronizer;
 				
-		public CopyId3TagsPostProcessor(
+		public CopyId3TagsPostprocessor(
 			IFileTranscoder innerTranscoder,
 			IAudioTagsSynchronizer audioTagsSynchronizer)
 		{			
