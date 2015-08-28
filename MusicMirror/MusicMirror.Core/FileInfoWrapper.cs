@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	class FileInfoWrapper : IFileInfo
+	sealed class FileInfoWrapper : IFileInfo
 	{
 		private readonly FileInfo _file;
 

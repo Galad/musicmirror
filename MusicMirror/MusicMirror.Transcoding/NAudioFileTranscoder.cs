@@ -11,7 +11,7 @@ using NAudio.Wave;
 
 namespace MusicMirror.Transcoding
 {
-	public class NAudioFileTranscoder : IFileTranscoder
+	public sealed class NAudioFileTranscoder : IFileTranscoder
 	{
 		private readonly IAsyncFileOperations _asyncFileOperations;
 		private readonly IWaveStreamTranscoder _waveStreamTranscoder;

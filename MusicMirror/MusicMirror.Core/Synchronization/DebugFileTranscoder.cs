@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror.Synchronization
 {
-	public class DebugFileTranscoder : IFileTranscoder
+	public sealed class DebugFileTranscoder : IFileTranscoder
 	{
 		public string GetTranscodedFileName(string sourceFileName)
 		{

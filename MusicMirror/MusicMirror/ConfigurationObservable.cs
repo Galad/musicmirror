@@ -8,7 +8,7 @@ using MusicMirror.Entities;
 
 namespace MusicMirror
 {
-	public class ConfigurationObservable : IObservable<Configuration>
+	public sealed class ConfigurationObservable : IObservable<Configuration>
 	{
 		private readonly ISettingsService _settingsService;
 		public const string SourcePathKey = "SourcePath";

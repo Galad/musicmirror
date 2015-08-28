@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace MusicMirror.Synchronization
 {
-	public class FileSynchronizeVisitor : IFileSynchronizerVisitor
+	public sealed class FileSynchronizeVisitor : IFileSynchronizerVisitor
 	{
 		private readonly IMirroredFolderOperations _synchronizeFile;
 

@@ -4,7 +4,7 @@ using Hanno.Navigation;
 
 namespace MusicMirror
 {
-	public class EmptyRequestNavigation : IRequestNavigation
+	public sealed class EmptyRequestNavigation : IRequestNavigation
 	{
 		public Task Navigate(CancellationToken ct, INavigationRequest request)
 		{

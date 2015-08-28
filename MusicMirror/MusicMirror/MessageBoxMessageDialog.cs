@@ -9,7 +9,7 @@ using Hanno.Services;
 
 namespace MusicMirror
 {
-	public class MessageBoxMessageDialog : IAsyncMessageDialog
+	public sealed class MessageBoxMessageDialog : IAsyncMessageDialog
 	{
 		public Task Show(CancellationToken ct, string title, string content)
 		{

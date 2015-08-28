@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	public class FileObserverFactory : IFileObserverFactory
+	public sealed class FileObserverFactory : IFileObserverFactory
 	{
 		private readonly IFileWatcher _fileWatcher;
 

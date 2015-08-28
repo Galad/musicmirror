@@ -5,7 +5,7 @@ using MusicMirror.Entities;
 
 namespace MusicMirror
 {
-	public class FileSynchronizerVisitorFactory : IFileSynchronizerVisitorFactory
+	public sealed class FileSynchronizerVisitorFactory : IFileSynchronizerVisitorFactory
 	{
 		private readonly IFileTranscoder _transcoder;
 

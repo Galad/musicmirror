@@ -54,14 +54,14 @@ namespace MusicMirror.Transcoding
 		}
 	}
 
-	public class FlacTagLibReaderWriter : TagLibReaderWriterBase
+	public sealed class FlacTagLibReaderWriter : TagLibReaderWriterBase
 	{
 		public FlacTagLibReaderWriter() : base("file.flac", TagTypes.FlacMetadata)
 		{
 		}
 	}
 
-	public class MP3TagLibReaderWriter : TagLibReaderWriterBase
+	public sealed class MP3TagLibReaderWriter : TagLibReaderWriterBase
 	{
 		public MP3TagLibReaderWriter() : base("file.mp3", TagTypes.Id3v2)
 		{

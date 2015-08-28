@@ -10,22 +10,25 @@ using NAudio.Wave;
 
 namespace MusicMirror
 {
+	[CLSCompliant(false)]
 	public interface IAudioStreamReader
 	{
 		Task<IWaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format);
 	}
 
+	[CLSCompliant(false)]
 	public interface IWaveStream : IWaveProvider, IDisposable
 	{		
 		Stream Stream { get; }	
 	}
 
-	public sealed class WaveStream : IWaveStream
+	[CLSCompliant(false)]
+	public sealed class WaveStreamWrapper : IWaveStream
 	{
 		private readonly WaveFormat _format;
 		private readonly NAudio.Wave.WaveStream _stream;
 
-		public WaveStream(NAudio.Wave.WaveStream stream, WaveFormat format)
+		public WaveStreamWrapper(NAudio.Wave.WaveStream stream, WaveFormat format)
 		{
 			if (stream == null) throw new ArgumentNullException(nameof(stream));
 			if (format == null) throw new ArgumentNullException(nameof(format));
@@ -60,7 +63,8 @@ namespace MusicMirror
 		}
 	}
 
-	public class AudioStreamReaderProvider : IAudioStreamReader
+	[CLSCompliant(false)]
+	public sealed class AudioStreamReaderProvider : IAudioStreamReader
 	{
 		private readonly Dictionary<AudioFormat, IAudioStreamReader> _audioStreamReaders = new Dictionary<AudioFormat, IAudioStreamReader>();
 

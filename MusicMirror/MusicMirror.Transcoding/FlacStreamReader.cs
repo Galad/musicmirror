@@ -10,26 +10,26 @@ using FlacBox;
 
 namespace MusicMirror.Transcoding
 {
-	public class FlacStreamReader : IAudioStreamReader
+	public sealed class FlacStreamReader : IAudioStreamReader
 	{
 		public Task<IWaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format)
 		{
 			return Task.Run(() =>
 			{
 				var stream = new NAudio.Flac.FlacReader(sourceStream);
-				return (IWaveStream)(new WaveStream(stream, stream.WaveFormat));
+				return (IWaveStream)(new WaveStreamWrapper(stream, stream.WaveFormat));
 			});			
 		}
 	}
 
-	public class FlacStreamReaderInternalNAudioFlac : IAudioStreamReader
+	public sealed class FlacStreamReaderInternalNAudioFlac : IAudioStreamReader
 	{
 		public Task<IWaveStream> ReadWave(CancellationToken ct, Stream sourceStream, AudioFormat format)
 		{
 			return Task.Run(() =>
 			{
 				var stream = new WaveStreamFromFlacStream(sourceStream);
-				return (IWaveStream)(new WaveStream(stream, stream.WaveFormat));
+				return (IWaveStream)(new WaveStreamWrapper(stream, stream.WaveFormat));
 			});
 		}
 	}

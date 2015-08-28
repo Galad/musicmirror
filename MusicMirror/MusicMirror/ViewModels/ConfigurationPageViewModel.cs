@@ -12,7 +12,7 @@ using Hanno.ViewModels;
 
 namespace MusicMirror.ViewModels
 {
-	public class ConfigurationPageViewModel : ViewModelBase
+	public sealed class ConfigurationPageViewModel : ViewModelBase
 	{
 		private readonly ISettingsService _settingsService;
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror.Synchronization
 {
-	public class SynchronizeSymbolicLinkFile : IMirroredFolderOperations
+	public sealed class SynchronizeSymbolicLinkFile : IMirroredFolderOperations
 	{
 		public Task DeleteFile(CancellationToken ct, FileInfo file)
 		{

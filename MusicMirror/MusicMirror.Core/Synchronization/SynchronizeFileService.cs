@@ -9,7 +9,7 @@ using MusicMirror.Entities;
 
 namespace MusicMirror.Synchronization
 {
-	public class SynchronizeFileService : IMirroredFolderOperations
+	public sealed class SynchronizeFileService : IMirroredFolderOperations
 	{
 		private readonly IAsyncFileOperations _asyncFileOperations;
 		private readonly Configuration _configuration;

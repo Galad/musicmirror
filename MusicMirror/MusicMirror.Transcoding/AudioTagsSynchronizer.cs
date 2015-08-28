@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror.Transcoding
 {
-	public class AudioTagsSynchronizer : IAudioTagsSynchronizer
+	public sealed class AudioTagsSynchronizer : IAudioTagsSynchronizer
 	{
 		private readonly IAsyncFileOperations _asyncFileOperations;
 		private readonly IAudioTagReader _audioTagReader;

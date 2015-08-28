@@ -52,7 +52,7 @@ namespace MusicMirror.Synchronization
 		}
 	}
 
-	public class DefaultRequireTranscoding : CompositeRequireTranscoding
+	public sealed class DefaultRequireTranscoding : CompositeRequireTranscoding
 	{
 		public DefaultRequireTranscoding()
 			: base(new IRequireTranscoding[] { new MP3RequireTranscoding(), new FlacRequireTranscoding() })

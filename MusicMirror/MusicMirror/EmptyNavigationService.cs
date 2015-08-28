@@ -9,7 +9,7 @@ using Hanno.Navigation;
 
 namespace MusicMirror
 {
-	public class EmptyNavigationService : INavigationService
+	public sealed class EmptyNavigationService : INavigationService
 	{
 		public Task NavigateBack(CancellationToken ct)
 		{

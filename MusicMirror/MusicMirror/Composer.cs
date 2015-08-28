@@ -30,7 +30,7 @@ using MusicMirror.Entities;
 
 namespace MusicMirror
 {
-	public class AppComposer : Composer
+	public sealed class AppComposer : Composer
 	{
 		public AppComposer() : base(() => new WpfSchedulers(
 			DispatcherScheduler.Current, 			

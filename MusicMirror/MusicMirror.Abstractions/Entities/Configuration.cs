@@ -10,7 +10,7 @@ namespace MusicMirror.Entities
 		Ignore
 	}
 
-	public class Configuration : IEquatable<Configuration>
+	public sealed class Configuration : IEquatable<Configuration>
 	{
 		#region Equality
 		public override bool Equals(object obj)

@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 
 namespace MusicMirror
 {
-	public class FileWatcher : IFileWatcher
+	public sealed class FileWatcher : IFileWatcher
 	{
 		public IObservable<IFileNotification> WatchFiles(DirectoryInfo directory)
 		{

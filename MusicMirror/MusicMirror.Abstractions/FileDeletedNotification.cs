@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	public class FileDeletedNotification : FileNotificationBase
+	public sealed class FileDeletedNotification : FileNotificationBase
 	{
 		public FileDeletedNotification(FileInfo fileInfo)
 			: base(fileInfo, FileNotificationKind.Deleted)

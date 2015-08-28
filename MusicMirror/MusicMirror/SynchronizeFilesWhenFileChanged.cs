@@ -11,7 +11,7 @@ using MusicMirror.Entities;
 
 namespace MusicMirror
 {
-	public class SynchronizeFilesWhenFileChanged : IObservable<Unit>
+	public sealed class SynchronizeFilesWhenFileChanged : IObservable<Unit>
 	{
 		private readonly IObservable<Configuration> _configurationObservable;
 		private readonly IFileObserverFactory _fileObserverFactory;
@@ -28,18 +28,6 @@ namespace MusicMirror
 			_configurationObservable = configurationObservable;
 			_fileObserverFactory = fileObserverFactory;
 			_fileSynchronizerVisitorFactory = fileSynchronizerVisitorFactory;
-		}
-
-		private class Directories
-		{
-			public readonly DirectoryInfo Source;
-			public readonly DirectoryInfo Target;
-
-			public Directories(DirectoryInfo source, DirectoryInfo target)
-			{
-				Source = source;
-				Target = target;
-			}
 		}
 
 		public IDisposable Subscribe(IObserver<Unit> observer)

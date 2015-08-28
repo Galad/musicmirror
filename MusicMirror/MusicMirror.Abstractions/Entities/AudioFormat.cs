@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	public class AudioFormat : IEquatable<AudioFormat>
+	public sealed class AudioFormat : IEquatable<AudioFormat>
 	{
 		public static readonly AudioFormat MP3 = new AudioFormat("MP3", "MPEG-1/2 Audio Layer 3", ".mp3", LossKind.Lossy);
 		public static readonly AudioFormat Flac = new AudioFormat("FLAC", "Free Lossless Audio Codec", ".flac", LossKind.Lossy);

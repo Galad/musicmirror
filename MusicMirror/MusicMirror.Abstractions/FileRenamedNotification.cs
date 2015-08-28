@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	public class FileRenamedNotification : FileNotificationBase
+	public sealed class FileRenamedNotification : FileNotificationBase
 	{
 		public string OldFullPath { get; private set; }
 

@@ -19,7 +19,7 @@ namespace MusicMirror.Transcoding
 		Task Transcode(CancellationToken ct, IWaveStream stream, Stream targetStream);
 	}
 
-	public class WaveToMP3Transcoder : IWaveStreamTranscoder
+	public sealed class WaveToMP3Transcoder : IWaveStreamTranscoder
 	{
 		public string GetTranscodedFileName(string sourceFileName)
 		{
@@ -49,7 +49,7 @@ namespace MusicMirror.Transcoding
 		}
 	}
 
-	public class WaveToMP3MediaFoundationTranscoder : IWaveStreamTranscoder
+	public sealed class WaveToMP3MediaFoundationTranscoder : IWaveStreamTranscoder
 	{
 		public string GetTranscodedFileName(string sourceFileName)
 		{
@@ -90,7 +90,7 @@ namespace MusicMirror.Transcoding
 		}
 	}
 
-	public class RawWaveTranscoder : IWaveStreamTranscoder
+	public sealed class RawWaveTranscoder : IWaveStreamTranscoder
 	{
 		public string GetTranscodedFileName(string sourceFileName)
 		{

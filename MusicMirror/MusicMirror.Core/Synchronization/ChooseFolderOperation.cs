@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror.Synchronization
 {
-	public class ChooseFolderOperation : IMirroredFolderOperations
+	public sealed class ChooseFolderOperation : IMirroredFolderOperations
 	{
 		private readonly IMirroredFolderOperations _defaultFileOperations;
 		private readonly IMirroredFolderOperations _transcodingFolderOperations;

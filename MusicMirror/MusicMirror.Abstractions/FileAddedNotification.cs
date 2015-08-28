@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	public class FileAddedNotification : FileNotificationBase
+	public sealed class FileAddedNotification : FileNotificationBase
 	{
 		public FileAddedNotification(FileInfo fileInfo)
 			:base(fileInfo, FileNotificationKind.Added)

@@ -4,7 +4,7 @@ using Microsoft.Practices.Unity;
 
 namespace MusicMirror
 {
-	public class UnityAsyncDataTableFactory : IAsyncDataTableFactory
+	public sealed class UnityAsyncDataTableFactory : IAsyncDataTableFactory
 	{
 		private readonly IUnityContainer _container;
 		private readonly string _resolutionName;

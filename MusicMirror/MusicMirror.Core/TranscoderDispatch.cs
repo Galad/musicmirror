@@ -8,12 +8,12 @@ using MusicMirror.Synchronization;
 
 namespace MusicMirror
 {
-	public class TranscoderDispatch : IFileTranscoder
+	public sealed class TranscoderDispatch : IFileTranscoder
 	{
 		private readonly IFileTranscoder _defaultTranscoder;
 		private readonly List<TranscoderEntry> _transcoders;
 
-		private class TranscoderEntry
+		sealed private class TranscoderEntry
 		{
 			public AudioFormat Format;
 			public IFileTranscoder Transcoder;

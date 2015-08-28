@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror.Synchronization
 {
-	public class FileSynchronizer : IFileSynchronizer
+	public sealed class FileSynchronizer : IFileSynchronizer
 	{
 		private readonly ISynchronizedFilesRepository _synchronizedFileRepository;
 		private readonly IFileTranscoder _transcoder;
