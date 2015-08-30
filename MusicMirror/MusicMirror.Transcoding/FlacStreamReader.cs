@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BigMansStuff.NAudio.FLAC;
 using FlacBox;
 
+
 namespace MusicMirror.Transcoding
 {
 	public sealed class FlacStreamReader : IAudioStreamReader

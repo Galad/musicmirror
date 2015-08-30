@@ -9,6 +9,7 @@ using Hanno.IO;
 using MusicMirror.Synchronization;
 using NAudio.Wave;
 
+
 namespace MusicMirror.Transcoding
 {
 	public sealed class NAudioFileTranscoder : IFileTranscoder

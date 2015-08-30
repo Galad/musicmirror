@@ -10,8 +10,10 @@ namespace MusicMirror
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "AudioFormat is immutable")]
 		public static readonly AudioFormat MP3 = new AudioFormat("MP3", "MPEG-1/2 Audio Layer 3", ".mp3", LossKind.Lossy);
-		public static readonly AudioFormat FLAC = new AudioFormat("FLAC", "Free Lossless Audio Codec", ".flac", LossKind.Lossy);
-		public static readonly IEnumerable<AudioFormat> KnownFormats = new[] { MP3, FLAC }.AsEnumerable();
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "AudioFormat is immutable")]
+		public static readonly AudioFormat Flac = new AudioFormat("FLAC", "Free Lossless Audio Codec", ".flac", LossKind.Lossy);
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "AudioFormat is immutable")]
+		public static readonly IEnumerable<AudioFormat> KnownFormats = new[] { MP3, Flac }.AsEnumerable();
 		
 		private readonly IEnumerable<string> _allExtensions;
 		private readonly string _defaultExtension;

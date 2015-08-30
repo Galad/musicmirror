@@ -10,7 +10,7 @@ using FluentAssertions;
 using Moq;
 using System.Threading.Tasks;
 using System.IO;
-using MusicMirror.Entities;
+
 
 namespace MusicMirror.Transcoding.Tests
 {
@@ -39,9 +39,9 @@ namespace MusicMirror.Transcoding.Tests
 		{
 			//arrange
 			//act
-			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.FLAC, configuration.TargetPath);
+			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.Flac, configuration.TargetPath);
 			//assert
-			innerFileTranscoder.Verify(f => f.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.FLAC, configuration.TargetPath));
+			innerFileTranscoder.Verify(f => f.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.Flac, configuration.TargetPath));
 		}
 		
 		[Theory, FileAutoData]
@@ -55,7 +55,7 @@ namespace MusicMirror.Transcoding.Tests
 			//arrange
 			innerFileTranscoder.Setup(f => f.GetTranscodedFileName(sourceFile.File.Name)).Returns(targetFile.File.Name);			
 			//act
-			await sut.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.FLAC, targetFile.File.Directory);
+			await sut.Transcode(It.IsAny<CancellationToken>(), sourceFile.File, AudioFormat.Flac, targetFile.File.Directory);
 			//assert
 			audioTagsSynchronizer.Verify(
 				a => a.SynchronizeTags(

@@ -13,7 +13,7 @@ using Xunit;
 using FluentAssertions;
 using Moq;
 using MusicMirror.Tests.Autofixture;
-using MusicMirror.Entities;
+
 using static Hanno.Testing.Autofixture.MockExtensions;
 
 namespace MusicMirror.Tests
@@ -56,7 +56,7 @@ namespace MusicMirror.Tests
 				f.Transcode(
 					It.IsAny<CancellationToken>(),
 					sourceFile.File,
-					AudioFormat.FLAC,
+					AudioFormat.Flac,
                     It.Is((DirectoryInfo d) => d.FullName.Equals(targetFile.File.DirectoryName))));
 		}
 
@@ -83,7 +83,7 @@ namespace MusicMirror.Tests
 				f.Transcode(
 					It.IsAny<CancellationToken>(),
 					sourceFile.File,
-					AudioFormat.FLAC,
+					AudioFormat.Flac,
 					It.Is((DirectoryInfo d) => d.FullName.Equals(targetFile.File.DirectoryName))),
 				Times.Never());
 		}

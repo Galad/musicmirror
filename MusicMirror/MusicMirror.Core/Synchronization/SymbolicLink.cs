@@ -79,6 +79,7 @@ namespace MusicMirror.Synchronization
 			}
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		public static bool Exists(string path)
 		{
 			if (!Directory.Exists(path) && !File.Exists(path))
@@ -95,6 +96,7 @@ namespace MusicMirror.Synchronization
 				fileFlagsForOpenReparsePointAndBackupSemantics, IntPtr.Zero);
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", MessageId = "System.Runtime.InteropServices.SafeHandle.DangerousGetHandle")]
 		public static string GetTarget(string path)
 		{
 			SymbolicLinkReparseData reparseDataBuffer;

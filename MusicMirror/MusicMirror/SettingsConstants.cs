@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	public class SettingsConstants
+	public static class SettingsConstants
 	{
 		public const string SourcePath = "SourcePath";
 		public const string TargetPath = "TargetPath";

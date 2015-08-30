@@ -14,7 +14,7 @@ using Xunit;
 using FluentAssertions;
 using Moq;
 using MusicMirror.Tests.Autofixture;
-using MusicMirror.Entities;
+
 
 namespace MusicMirror.Tests
 {

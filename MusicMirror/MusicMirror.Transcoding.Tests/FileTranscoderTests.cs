@@ -14,7 +14,7 @@ using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 using static Hanno.Testing.Autofixture.MockExtensions;
 using Ploeh.AutoFixture;
-using MusicMirror.Entities;
+
 
 namespace MusicMirror.Transcoding.Tests
 {
@@ -51,10 +51,10 @@ namespace MusicMirror.Transcoding.Tests
 			waveStreamTranscoder.Setup(t => t.GetTranscodedFileName(sourceFile.File.Name)).Returns(targetFile.File.Name);
 			asyncFileOperations.Setup(f => f.OpenRead(sourceFile.ToString())).ReturnsTask(sourceStream);
 			asyncFileOperations.Setup(f => f.OpenWrite(Path.Combine(config.TargetPath.FullName, targetFile.File.Name))).ReturnsTask(targetStream);
-			audioStreamReader.Setup(a => a.ReadWave(It.IsAny<CancellationToken>(), sourceStream, AudioFormat.FLAC))
+			audioStreamReader.Setup(a => a.ReadWave(It.IsAny<CancellationToken>(), sourceStream, AudioFormat.Flac))
 				.ReturnsTask(waveStream);
 			//act
-			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.FLAC, config.TargetPath);
+			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.Flac, config.TargetPath);
 			//assert
 			waveStreamTranscoder.Verify(t => t.Transcode(It.IsAny<CancellationToken>(), waveStream, targetStream));
 		}
@@ -75,7 +75,7 @@ namespace MusicMirror.Transcoding.Tests
 			//arrange
 			asyncDirectoryOperations.Setup(d => d.Exists(config.TargetPath.FullName)).ReturnsTask(exist);
 			//act
-			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.FLAC, config.TargetPath);
+			await sut.Transcode(CancellationToken.None, sourceFile.File, AudioFormat.Flac, config.TargetPath);
 			//assetr
 			asyncDirectoryOperations.VerifyOnce(d => d.CreateDirectory(config.TargetPath.FullName), shouldCallCreateDirectory);
 		}

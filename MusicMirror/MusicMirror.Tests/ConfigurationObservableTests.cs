@@ -11,7 +11,7 @@ using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 using MusicMirror.Tests.Autofixture;
 using static Hanno.Testing.Autofixture.TestableObserverExtensions;
-using MusicMirror.Entities;
+
 
 namespace MusicMirror.Tests
 {

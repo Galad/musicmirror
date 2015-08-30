@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using log4net;
 using MusicMirror.Synchronization;
 
+
 namespace MusicMirror.Logging
 {
 	public sealed class LoggingFileTranscoder : IFileTranscoder

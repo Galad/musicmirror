@@ -26,7 +26,7 @@ using MusicMirror.Logging;
 using MusicMirror.Synchronization;
 using MusicMirror.Transcoding;
 using MusicMirror.ViewModels;
-using MusicMirror.Entities;
+
 using System.Reactive;
 using NAudio.MediaFoundation;
 
@@ -54,7 +54,7 @@ namespace MusicMirror
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Composition root")]
-		public ConfigurationPageViewModel Compose(int numberOfConfigurationChanges = 0)
+		public ConfigurationPageViewModel Compose()
 		{
 			MediaFoundationApi.Startup();
 			var schedulers = _schedulers();
@@ -104,7 +104,7 @@ namespace MusicMirror
 				new ContainerControlledLifetimeManager(),
 				new InjectionFactory(c =>
 			new SynchronizeFilesWhenFileChanged(
-				GetConfigurationObservable(settingsService, numberOfConfigurationChanges),
+				GetConfigurationObservable(settingsService),
 				new FileObserverFactory(new FileWatcher()),
 				new LoggingFileSynchronizerVisitorFactory(
 					new FileSynchronizerVisitorFactory(CreateTranscoder()),
@@ -114,14 +114,9 @@ namespace MusicMirror
 			return viewModel;
 		}
 
-		private static IObservable<MusicMirrorConfiguration> GetConfigurationObservable(SettingsService settingsService, int numberOfConfigurationChanges)
+		private static IObservable<MusicMirrorConfiguration> GetConfigurationObservable(SettingsService settingsService)
 		{
-			var observable = new FilterValidDirectories(new ConfigurationObservable(settingsService));
-			if(numberOfConfigurationChanges > 0)
-			{
-				return new LimitNumberOfConfigurationChanges(observable, numberOfConfigurationChanges);
-			}
-			return observable;
+			return new FilterValidDirectories(new ConfigurationObservable(settingsService));			
 		}
 
 		public T Resolve<T>()
@@ -153,7 +148,7 @@ namespace MusicMirror
 					new FlacTagLibReaderWriter(),
 					new MP3TagLibReaderWriter()
 				)),
-				AudioFormat.FLAC);
+				AudioFormat.Flac);
 			return new LoggingFileTranscoder(transcoder, LogManager.GetLogger(typeof(IFileTranscoder)));
 		}
 

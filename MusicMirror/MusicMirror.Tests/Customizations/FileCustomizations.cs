@@ -7,7 +7,7 @@ using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 using Xunit.Extensions;
 using Moq;
-using MusicMirror.Entities;
+
 
 namespace MusicMirror.Tests.Customizations
 {
@@ -29,7 +29,7 @@ namespace MusicMirror.Tests.Customizations
 			fixture.Freeze<MusicMirrorConfiguration>();
 			fixture.Register(() => CreateFilePath(SourceFilePath.CreateFromPathWithoutExtension, fixture));
 			fixture.Register(() => CreateFilePath(TargetFilePath.CreateFromPathWithoutExtension, fixture));
-			fixture.Register<IEnumerable<AudioFormat>>(() => new[] { AudioFormat.MP3, AudioFormat.FLAC });
+			fixture.Register<IEnumerable<AudioFormat>>(() => new[] { AudioFormat.MP3, AudioFormat.Flac });
 			fixture.Register<Stream>(() => fixture.Create<MemoryStream>());										
 		}
 

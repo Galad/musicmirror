@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MusicMirror.Synchronization;
 using NAudio.Flac;
 
+
 namespace MusicMirror.Transcoding
 {
 	public sealed class CopyId3TagsPostProcessor : IFileTranscoder

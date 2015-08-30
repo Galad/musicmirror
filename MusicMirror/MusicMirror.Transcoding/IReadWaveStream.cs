@@ -8,7 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 
-namespace MusicMirror
+
+namespace MusicMirror.Transcoding
 {
 	[CLSCompliant(false)]
 	public interface IAudioStreamReader

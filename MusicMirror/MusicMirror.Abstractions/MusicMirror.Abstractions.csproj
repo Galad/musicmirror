@@ -45,8 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\AudioFormat.cs" />
-    <Compile Include="Entities\Configuration.cs" />
+    <Compile Include="AudioFormat.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="FileAddedNotification.cs" />
     <Compile Include="FileDeletedNotification.cs" />
     <Compile Include="FileInitNotification.cs" />
@@ -63,9 +63,9 @@
     <Compile Include="IFileSynchronizerVisitorFactory.cs" />
     <Compile Include="IFileWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Synchronization\FileModifiedNotification.cs" />
+    <Compile Include="FileModifiedNotification.cs" />
     <Compile Include="Synchronization\IFileSynchronizer.cs" />
-    <Compile Include="Synchronization\IFileTranscoder.cs" />
+    <Compile Include="IFileTranscoder.cs" />
     <Compile Include="Synchronization\IMirroredFolderOperations.cs" />
     <Compile Include="Synchronization\IRequireTranscoding.cs" />
     <Compile Include="Synchronization\ISynchronizedFilesRepository.cs" />
@@ -80,6 +80,7 @@
       <Link>CustomDictionary.xml</Link>
     </Resource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

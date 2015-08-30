@@ -84,9 +84,6 @@
     <Reference Include="Hanno.Testing.Autofixture">
       <HintPath>..\Hanno\Hanno.Testing.Autofixture.dll</HintPath>
     </Reference>
-    <Reference Include="ImmutableObjectGraph">
-      <HintPath>..\packages\ImmutableObjectGraph.Core.0.1.0-beta4\lib\portable-net45+win+wp80\ImmutableObjectGraph.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -131,10 +128,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Validation.2.0.5.14286\lib\portable-windows8+net40+sl5+wp8+wpa81+wp81+MonoAndroid+MonoTouch\Validation.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
