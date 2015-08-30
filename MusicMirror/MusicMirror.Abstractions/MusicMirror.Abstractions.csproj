@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\MusicMirror\MusicMirror.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -50,6 +50,7 @@
     <Compile Include="FileAddedNotification.cs" />
     <Compile Include="FileDeletedNotification.cs" />
     <Compile Include="FileInitNotification.cs" />
+    <Compile Include="FileModifiedNotification.cs" />
     <Compile Include="FileNotificationBase.cs" />
     <Compile Include="FileNotificationKind.cs" />
     <Compile Include="FileRenamedNotification.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="IFileSynchronizerVisitorFactory.cs" />
     <Compile Include="IFileWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FileModifiedNotification.cs" />
     <Compile Include="Synchronization\IFileSynchronizer.cs" />
     <Compile Include="IFileTranscoder.cs" />
     <Compile Include="Synchronization\IMirroredFolderOperations.cs" />

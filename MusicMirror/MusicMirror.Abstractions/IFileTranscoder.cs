@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MusicMirror.Synchronization
+namespace MusicMirror
 {
 	/// <summary>
 	/// Transcode file in a different format
