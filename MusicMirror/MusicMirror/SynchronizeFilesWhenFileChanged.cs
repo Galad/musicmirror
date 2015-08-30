@@ -32,9 +32,7 @@ namespace MusicMirror
 
 		public IDisposable Subscribe(IObserver<Unit> observer)
 		{
-			return _configurationObservable
-				.Where(c => c.HasValidDirectories)
-				.DistinctUntilChanged()
+			return _configurationObservable				
 				.Select(ObserveFiles)
 				.Switch()
 				.Subscribe(observer);
@@ -42,10 +40,12 @@ namespace MusicMirror
 
 		private IObservable<Unit> ObserveFiles(MusicMirrorConfiguration configuration)
 		{
-			var visitor = _fileSynchronizerVisitorFactory.CreateVisitor(configuration);
+			var visitor = _fileSynchronizerVisitorFactory.CreateVisitor(configuration);						
 			return _fileObserverFactory.GetFileObserver(configuration.SourcePath)
 									   .SelectMany(files => files.Select(file => SynchronizeFile(file, visitor))
-																 .Merge(4));
+																 .Merge(4)
+																 .ToList()
+																 .SelectUnit());
 		}
 
 		private static IObservable<Unit> SynchronizeFile(IFileNotification file, IFileSynchronizerVisitor visitor)

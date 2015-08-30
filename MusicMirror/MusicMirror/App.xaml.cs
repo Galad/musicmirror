@@ -16,14 +16,12 @@ namespace MusicMirror
 	{
 		protected override void OnStartup(StartupEventArgs e)
 		{
-			base.OnStartup(e);
-			MediaFoundationApi.Startup();
+			base.OnStartup(e);			
         }
 
 		protected override void OnExit(ExitEventArgs e)
 		{
-			base.OnExit(e);
-			MediaFoundationApi.Shutdown();
+			base.OnExit(e);			
 		}
 	}
 }

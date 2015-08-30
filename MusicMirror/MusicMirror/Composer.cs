@@ -27,6 +27,8 @@ using MusicMirror.Synchronization;
 using MusicMirror.Transcoding;
 using MusicMirror.ViewModels;
 using MusicMirror.Entities;
+using System.Reactive;
+using NAudio.MediaFoundation;
 
 namespace MusicMirror
 {
@@ -52,8 +54,9 @@ namespace MusicMirror
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Composition root")]
-		public ConfigurationPageViewModel Compose()
+		public ConfigurationPageViewModel Compose(int numberOfConfigurationChanges = 0)
 		{
+			MediaFoundationApi.Startup();
 			var schedulers = _schedulers();
 			log4net.Config.XmlConfigurator.Configure();
 			var cqrs = new AsyncCommandQueryBus(
@@ -96,20 +99,39 @@ namespace MusicMirror
 					settingsService
 				);
 
+			_container.RegisterType<IObservable<Unit>>(
+				"SynchronizeFilesWhenFileChanged",
+				new ContainerControlledLifetimeManager(),
+				new InjectionFactory(c =>
 			new SynchronizeFilesWhenFileChanged(
-				new ConfigurationObservable(settingsService),
+				GetConfigurationObservable(settingsService, numberOfConfigurationChanges),
 				new FileObserverFactory(new FileWatcher()),
 				new LoggingFileSynchronizerVisitorFactory(
 					new FileSynchronizerVisitorFactory(CreateTranscoder()),
-					LogManager.GetLogger(typeof(IFileSynchronizerVisitor))))
-				.Subscribe(_ => { }, e => e.DebugWriteline(), () => Debug.WriteLine("SynchronizeFilesWhenFileChanged complete"));
+					//new EmptyFileSynchronizerVisitorFactory(),
+					LogManager.GetLogger(typeof(IFileSynchronizerVisitor))))));
 			viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
 			return viewModel;
 		}
-				
+
+		private static IObservable<MusicMirrorConfiguration> GetConfigurationObservable(SettingsService settingsService, int numberOfConfigurationChanges)
+		{
+			var observable = new FilterValidDirectories(new ConfigurationObservable(settingsService));
+			if(numberOfConfigurationChanges > 0)
+			{
+				return new LimitNumberOfConfigurationChanges(observable, numberOfConfigurationChanges);
+			}
+			return observable;
+		}
+
 		public T Resolve<T>()
 		{
 			return _container.Resolve<T>();
+		}
+
+		public T Resolve<T>(string name)
+		{
+			return _container.Resolve<T>(name);
 		}
 
 		private static IFileTranscoder CreateTranscoder()
@@ -122,7 +144,7 @@ namespace MusicMirror
 					//new FlacStreamReaderInternalNAudioFlac(),
 					new WaveToMP3Transcoder(),
 					//new RawWaveTranscoder(),
-					//new WaveToMp3MediaFoundationTranscoder(),
+					//new WaveToMP3MediaFoundationTranscoder(),
                     new AsyncOperations(new FileOperations()),
 					new AsyncDirectoryOperations(new DirectoryOperations())
 					),
@@ -152,6 +174,7 @@ namespace MusicMirror
 			if (disposing)
 			{
 				_container.Dispose();
+				MediaFoundationApi.Shutdown();
 				// Free any other managed objects here. 
 				//
 			}

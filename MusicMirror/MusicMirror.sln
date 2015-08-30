@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAudioFLAC", "NAudioFlac\NA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMirror.Abstractions", "MusicMirror.Abstractions\MusicMirror.Abstractions.csproj", "{95F457EC-1637-4C0D-8428-786E7CF1204D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMirror.FunctionalTests", "MusicMirror.FunctionalTests\MusicMirror.FunctionalTests.csproj", "{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,6 +118,18 @@ Global
 		{95F457EC-1637-4C0D-8428-786E7CF1204D}.Release|x64.Build.0 = Release|Any CPU
 		{95F457EC-1637-4C0D-8428-786E7CF1204D}.Release|x86.ActiveCfg = Release|Any CPU
 		{95F457EC-1637-4C0D-8428-786E7CF1204D}.Release|x86.Build.0 = Release|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Debug|x64.Build.0 = Debug|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Debug|x86.Build.0 = Debug|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Release|Any CPU.Build.0 = Release|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Release|x64.ActiveCfg = Release|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Release|x64.Build.0 = Release|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Release|x86.ActiveCfg = Release|Any CPU
+		{422EA5A5-F0A6-41C1-9C2A-2EFEF4663657}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

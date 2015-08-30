@@ -9,6 +9,7 @@ using Xunit;
 using FluentAssertions;
 using Moq;
 using MusicMirror.Entities;
+using System.Security.Permissions;
 
 namespace MusicMirror.Tests
 {
@@ -17,7 +18,7 @@ namespace MusicMirror.Tests
 		[Theory, FileAutoData]
 		public void FileExtensions_VerifyGuardClauses(
 		  GuardClauseAssertion assertion)
-		{
+		{			
 			var methods = typeof (FileExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static);
 			assertion.Verify(methods);
 		}

@@ -24,24 +24,13 @@ namespace MusicMirror.ViewModels
 
 		protected override void OnInitialized()
 		{
-			base.OnInitialized();			
+			base.OnInitialized();
+			SourcePath = this.GetObservableProperty(() => _settingsService.ObserveValue(SettingsConstants.SourcePath, () => string.Empty), "SourcePath");
+			TargetPath = this.GetObservableProperty(() => _settingsService.ObserveValue(SettingsConstants.TargetPath, () => string.Empty), "TargetPath");
 		}
 
-		public IObservableProperty<string> SourcePath
-		{
-			get
-			{
-				return this.GetObservableProperty(() => _settingsService.ObserveValue("SourcePath", () => string.Empty));
-			}
-		}
-
-		public IObservableProperty<string> TargetPath
-		{
-			get
-			{
-				return this.GetObservableProperty(() => _settingsService.ObserveValue("TargetPath", () => string.Empty));
-			}
-		}
+		public IObservableProperty<string> SourcePath { get; private set; }
+		public IObservableProperty<string> TargetPath { get; private set; }
 
 		public ICommand SaveCommand
 		{
@@ -58,7 +47,7 @@ namespace MusicMirror.ViewModels
 		{
 			await _settingsService.SetValue("SourcePath", SourcePath.Value, ct);
 			await _settingsService.SetValue("TargetPath", TargetPath.Value, ct);
-        }
+		}
 
 		private IObservable<bool> CanExecuteSaveCommand()
 		{

@@ -35,16 +35,9 @@ namespace MusicMirror.Transcoding
 
 		public static async Task TranscodeInternal(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream)
 		{
-			using (var mp3Writer = new NAudio.Lame.LameMP3FileWriter(targetStream, stream.WaveFormat, NAudio.Lame.LAMEPreset.ABR_320))
-			{				
+			using (var mp3Writer = new NAudio.Lame.LameMP3FileWriter(targetStream, stream.WaveFormat, NAudio.Lame.LAMEPreset.VBR_90))
+			{
 				await stream.Stream.CopyToAsync(mp3Writer, 81920, ct);
-				//var bytesRead = 1;
-    //            while (bytesRead > 0)
-				//{
-				//	var buffer = new byte[4096*8];
-				//	bytesRead = await stream.Stream.ReadAsync(buffer, 0, buffer.Length, ct);
-				//	await mp3Writer.WriteAsync(buffer, 0, bytesRead);
-    //            }
 			}
 		}
 	}
@@ -65,28 +58,13 @@ namespace MusicMirror.Transcoding
 
 		public async Task TranscodeInternal(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream)
 		{
-			await Task.Run(() =>
-			{				
-				var mediaType = MediaFoundationEncoder.SelectMediaType(AudioSubtypes.MFAudioFormat_MP3, stream.WaveFormat, 48000);
-				using (var encoder = new MediaFoundationEncoder(mediaType))
-				{
-					encoder.Encode(GetTranscodedFileName("file.ww"), stream);
-				}
-			}, ct);
-			//try
-			//{
-			//	var tempFilename = Path.Combine(Path.GetTempPath(), GetTranscodedFileName(Guid.NewGuid().ToString() + ".extension"));
-			//	MediaFoundationEncoder.EncodeToMp3(stream, tempFilename, 192000);
-			//	using (var tempStream = new FileStream(tempFilename, FileMode.Open, FileAccess.Read))
-			//	{
-			//		await tempStream.CopyToAsync(targetStream);
-			//	}
-			//}
-			//catch (System.Runtime.InteropServices.COMException ex)
-			//{
-			//	System.Diagnostics.Debug.WriteLine(ex.ErrorCode);
-			//	System.Diagnostics.Debug.WriteLine(ex.HResult);
-			//}
+			var tempFilename = Path.Combine(Path.GetTempPath(), GetTranscodedFileName(Guid.NewGuid().ToString() + ".extension"));			
+			MediaFoundationEncoder.EncodeToMp3(stream, tempFilename, 320000);			
+			using (var tempStream = new FileStream(tempFilename, FileMode.Open, FileAccess.Read))
+			{
+				await tempStream.CopyToAsync(targetStream, 81920, ct);
+			}
+			File.Delete(tempFilename);
 		}
 	}
 
@@ -100,7 +78,7 @@ namespace MusicMirror.Transcoding
 		public async Task Transcode(CancellationToken ct, IWaveStreamProvider stream, Stream targetStream)
 		{
 			using (var fileWriter = new NAudio.Wave.WaveFileWriter(targetStream, stream.WaveFormat))
-			{				
+			{
 				await stream.Stream.CopyToAsync(fileWriter);
 			}
 		}

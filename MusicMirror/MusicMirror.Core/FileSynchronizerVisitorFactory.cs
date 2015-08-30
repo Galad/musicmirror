@@ -2,9 +2,47 @@ using System;
 using Hanno.IO;
 using MusicMirror.Synchronization;
 using MusicMirror.Entities;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MusicMirror
 {
+	public sealed class EmptyFileSynchronizerVisitorFactory : IFileSynchronizerVisitorFactory
+	{
+		public IFileSynchronizerVisitor CreateVisitor(MusicMirrorConfiguration configuration)
+		{
+			return new EmptyFileSynchronizerVisitor();
+		}
+
+		private class EmptyFileSynchronizerVisitor : IFileSynchronizerVisitor
+		{
+			public Task Visit(CancellationToken ct, FileModifiedNotification notification)
+			{
+				return Task.FromResult(true);				
+			}
+
+			public Task Visit(CancellationToken ct, FileInitNotification notification)
+			{
+				return Task.FromResult(true);
+			}
+
+			public Task Visit(CancellationToken ct, FileRenamedNotification notification)
+			{
+				return Task.FromResult(true);
+			}
+
+			public Task Visit(CancellationToken ct, FileDeletedNotification notification)
+			{
+				return Task.FromResult(true);
+			}
+
+			public Task Visit(CancellationToken ct, FileAddedNotification notification)
+			{
+				return Task.FromResult(true);
+			}
+		}
+	}
+
 	public sealed class FileSynchronizerVisitorFactory : IFileSynchronizerVisitorFactory
 	{
 		private readonly IFileTranscoder _transcoder;

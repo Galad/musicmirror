@@ -33,4 +33,42 @@ namespace MusicMirror
 			                       .Select(d => string.IsNullOrEmpty(d) ? null : new DirectoryInfo(d));
 		} 
 	}
+
+	public class FilterValidDirectories : IObservable<MusicMirrorConfiguration>
+	{
+		private readonly IObservable<MusicMirrorConfiguration> _innerObservable;
+
+		public FilterValidDirectories(IObservable<MusicMirrorConfiguration> innerObservable)
+		{
+			if (innerObservable == null) throw new ArgumentNullException(nameof(innerObservable));
+			_innerObservable = innerObservable;
+		}
+
+		public IDisposable Subscribe(IObserver<MusicMirrorConfiguration> observer)
+		{
+			return _innerObservable
+				.Where(c => c.HasValidDirectories)
+				.DistinctUntilChanged()
+				.Subscribe(observer);
+		}
+	}
+
+	public class LimitNumberOfConfigurationChanges : IObservable<MusicMirrorConfiguration>
+	{
+		private readonly IObservable<MusicMirrorConfiguration> _innerObservable;
+		private int _numberOfChanges;
+
+		public LimitNumberOfConfigurationChanges(IObservable<MusicMirrorConfiguration> innerObservable, int numberOfChanges)
+		{
+			if (innerObservable == null) throw new ArgumentNullException(nameof(innerObservable));
+			if (numberOfChanges <= 0) throw new ArgumentOutOfRangeException(nameof(numberOfChanges));
+			_innerObservable = innerObservable;
+			_numberOfChanges = numberOfChanges;
+		}
+
+		public IDisposable Subscribe(IObserver<MusicMirrorConfiguration> observer)
+		{
+			return _innerObservable.Take(_numberOfChanges).Subscribe(observer);
+		}
+	}
 }

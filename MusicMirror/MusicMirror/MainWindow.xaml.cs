@@ -22,6 +22,7 @@ using MusicMirror.ViewModels;
 using MusicMirror.Transcoding;
 using MusicMirror.Logging;
 using log4net;
+using System.Reactive;
 
 namespace MusicMirror
 {
@@ -34,7 +35,10 @@ namespace MusicMirror
 		public MainWindow()
 		{
 			InitializeComponent();
-			var viewModel = new AppComposer().Compose();			
+			var composer = new AppComposer();
+            var viewModel = composer.Compose();
+			composer.Resolve<IObservable<Unit>>("SynchronizeFilesWhenFileChanged")
+					.Subscribe(_ => { }, e => e.DebugWriteline(), () => Debug.WriteLine("SynchronizeFilesWhenFileChanged complete"));
 			DataContext = viewModel;
 			viewModel.Load(CancellationToken.None);
 		}		
