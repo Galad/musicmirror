@@ -20,7 +20,7 @@ namespace MusicMirror.FunctionalTests.Assertion
 			var file = Path.Combine(System.Environment.CurrentDirectory, SpecificationCustomization.ReferenceTestFileRootFolder, TestFilesConstants.MP3.SourceNormalFile1);
 			var expected = TimeSpan.FromSeconds(4 * 60 + 18);
 			//act
-			var actual = TestContextExtensions.GetFileDurationMP3(file);
+			var actual = TestContextUtils.GetFileDurationMP3(file);
 			//assert
 			actual.Should().BeCloseTo(expected, 1000);
 		}
@@ -32,7 +32,7 @@ namespace MusicMirror.FunctionalTests.Assertion
 			var file = Path.Combine(System.Environment.CurrentDirectory, SpecificationCustomization.ReferenceTestFileRootFolder, TestFilesConstants.Flac.SourceNormalFile1);
 			var expected = TimeSpan.FromSeconds(7 * 60 + 15);
 			//act
-			var actual = TestContextExtensions.GetFileDurationFlac(file);
+			var actual = TestContextUtils.GetFileDurationFlac(file);
 			//assert
 			actual.Should().BeCloseTo(expected, 1000);
 		}
@@ -44,7 +44,7 @@ namespace MusicMirror.FunctionalTests.Assertion
 			var file = Path.Combine(System.Environment.CurrentDirectory, SpecificationCustomization.ReferenceTestFileRootFolder, TestFilesConstants.MP3.SourceFileWithWrongDisplayedDuration);
 			var expected = TimeSpan.FromSeconds(7 * 60 + 49);
 			//act
-			var actual = TestContextExtensions.GetMediaFoundationDurationMP3(file);
+			var actual = TestContextUtils.GetMediaFoundationDurationMP3(file);
 			//assert
 			actual.Should().BeCloseTo(expected, 1000);
 		}

@@ -88,6 +88,9 @@ namespace MusicMirror.FunctionalTests.Utils
 			_viewModel.SaveCommand.Execute(null);
 			await synchronizationCompleteTask;
 		}		
+
+		public ISynchronizationController SynchronizationController { get { return _composer.Resolve<ISynchronizationController>(); } }
+		public ISynchronizationNotifications SynchronizationNotifications { get { return _composer.Resolve<ISynchronizationNotifications>(); } }
 	}
 
 	internal class TestFilesRepository

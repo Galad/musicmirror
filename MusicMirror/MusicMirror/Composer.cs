@@ -110,6 +110,10 @@ namespace MusicMirror
 					new FileSynchronizerVisitorFactory(CreateTranscoder()),
 					//new EmptyFileSynchronizerVisitorFactory(),
 					LogManager.GetLogger(typeof(IFileSynchronizerVisitor))))));
+
+			_container.RegisterType<SynchronizationController>(new ContainerControlledLifetimeManager());
+			_container.RegisterType<ISynchronizationController, SynchronizationController>();
+			_container.RegisterType<ISynchronizationNotifications, SynchronizationController>();
 			viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
 			return viewModel;
 		}

@@ -74,8 +74,8 @@ namespace MusicMirror.FunctionalTests.Transcoding
 			//act
 			await _context.ExecuteSynchronization(CancellationToken.None);
 			//assert
-			var expectedFileDuration = TestContextExtensions.GetFileDurationFlac(_context.GetSourceFileFromRelativePath(Path.GetFileName(file)));
-			var actualFileDuration = TestContextExtensions.GetMediaFoundationDurationMP3(_context.GetTargetFileFromRelativePath(expectedFileName));
+			var expectedFileDuration = TestContextUtils.GetFileDurationFlac(_context.GetSourceFileFromRelativePath(Path.GetFileName(file)));
+			var actualFileDuration = TestContextUtils.GetMediaFoundationDurationMP3(_context.GetTargetFileFromRelativePath(expectedFileName));
 			expectedFileDuration.Should().BeCloseTo(actualFileDuration, 5000);
         }
 	}
