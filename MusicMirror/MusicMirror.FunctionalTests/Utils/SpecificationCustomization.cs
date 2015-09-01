@@ -2,7 +2,7 @@
 using Hanno.Concurrency;
 using Hanno.Rx;
 using Hanno.Testing.Autofixture;
-using MusicMirror.FunctionalTests.Transcoding;
+using MusicMirror.FunctionalTests.Tests;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Ploeh.AutoFixture.Xunit2;

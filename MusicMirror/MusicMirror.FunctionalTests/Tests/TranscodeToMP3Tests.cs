@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace MusicMirror.FunctionalTests.Transcoding
+namespace MusicMirror.FunctionalTests.Tests
 {
 	[Trait("TestLevel", "Functional")]
 	public class TranscodeToMP3Tests : IDisposable

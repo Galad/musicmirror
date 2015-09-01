@@ -80,17 +80,25 @@ namespace MusicMirror.FunctionalTests.Utils
 
 		public async Task ExecuteSynchronization(CancellationToken ct)
 		{
-			await _viewModel.Load(ct);
+			await ViewModel.Load(ct);
 			var observable = _composer.Resolve<IObservable<Unit>>("SynchronizeFilesWhenFileChanged");
 			var synchronizationCompleteTask = observable.Take(1).ObserveOn(ThreadPoolScheduler.Instance).ToTask(ct).ConfigureAwait(false);
-			_viewModel.SourcePath.OnNext(_sourceDirectory);
-			_viewModel.TargetPath.OnNext(_targetDirectory);
-			_viewModel.SaveCommand.Execute(null);
+			ViewModel.SourcePath.OnNext(_sourceDirectory);
+			ViewModel.TargetPath.OnNext(_targetDirectory);
+			ViewModel.SaveCommand.Execute(null);
 			await synchronizationCompleteTask;
 		}		
 
 		public ISynchronizationController SynchronizationController { get { return _composer.Resolve<ISynchronizationController>(); } }
 		public ISynchronizationNotifications SynchronizationNotifications { get { return _composer.Resolve<ISynchronizationNotifications>(); } }
+
+		public ConfigurationPageViewModel ViewModel
+		{
+			get
+			{
+				return _viewModel;
+			}
+		}		
 	}
 
 	internal class TestFilesRepository

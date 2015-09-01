@@ -35,7 +35,7 @@ namespace MusicMirror
 	public sealed class AppComposer : Composer
 	{
 		public AppComposer() : base(() => new WpfSchedulers(
-			DispatcherScheduler.Current, 			
+			DispatcherScheduler.Current,
 			new SingleSchedulerPriorityScheduler(DispatcherScheduler.Current),
 			new SingleSchedulerPriorityScheduler(ThreadPoolScheduler.Instance)))
 		{
@@ -49,7 +49,7 @@ namespace MusicMirror
 		protected Composer(Func<ISchedulers> schedulers)
 		{
 			_schedulers = Guard.ForNull(schedulers, nameof(schedulers));
-			_container = new UnityContainer();			
+			_container = new UnityContainer();
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
@@ -81,46 +81,55 @@ namespace MusicMirror
 						_container,
 						"Settings")));
 
-			var viewModel = new ConfigurationPageViewModel(
-				new ViewModelServices(
-					new NoRuleProvider(),
-					new DefaultObservableRegistrationService(
-						new MessageBoxAsyncMessageDialog(),
-						new StringResources()),
-					new PropertyValidator(),
-					schedulers,
-					new EmptyNavigationService(),
-					new EmptyRequestNavigation(),
-					cqrs,
-					cqrs,
-					new CommandEvents(),
-					new NotifyCommandStateBus(cqrs, schedulers.ThreadPool),
-					new NotifyQueryStateBus(cqrs)),
-					settingsService
-				);
-
 			_container.RegisterType<IObservable<Unit>>(
-				"SynchronizeFilesWhenFileChanged",
-				new ContainerControlledLifetimeManager(),
-				new InjectionFactory(c =>
-			new SynchronizeFilesWhenFileChanged(
-				GetConfigurationObservable(settingsService),
-				new FileObserverFactory(new FileWatcher()),
-				new LoggingFileSynchronizerVisitorFactory(
-					new FileSynchronizerVisitorFactory(CreateTranscoder()),
-					//new EmptyFileSynchronizerVisitorFactory(),
-					LogManager.GetLogger(typeof(IFileSynchronizerVisitor))))));
+			"SynchronizeFilesWhenFileChanged",
+			new ContainerControlledLifetimeManager(),
+			new InjectionFactory(c =>
+		new SynchronizeFilesWhenFileChanged(
+			GetConfigurationObservable(settingsService),
+			new FileObserverFactory(new FileWatcher()),
+			new LoggingFileSynchronizerVisitorFactory(
+				new FileSynchronizerVisitorFactory(CreateTranscoder()),
+				//new EmptyFileSynchronizerVisitorFactory(),
+				LogManager.GetLogger(typeof(IFileSynchronizerVisitor))))));
 
-			_container.RegisterType<SynchronizationController>(new ContainerControlledLifetimeManager());
+			_container.RegisterType<SynchronizationController>(
+				new ContainerControlledLifetimeManager(),
+				new InjectionFactory(c => new SynchronizationController(schedulers.ThreadPool)
+				));
 			_container.RegisterType<ISynchronizationController, SynchronizationController>();
 			_container.RegisterType<ISynchronizationNotifications, SynchronizationController>();
-			viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
-			return viewModel;
+
+			_container.RegisterType<ConfigurationPageViewModel>(
+				new InjectionFactory(c =>
+				{
+					var viewModel = new ConfigurationPageViewModel(
+						new ViewModelServices(
+							new NoRuleProvider(),
+							new DefaultObservableRegistrationService(
+								new MessageBoxAsyncMessageDialog(),
+								new StringResources()),
+							new PropertyValidator(),
+							schedulers,
+							new EmptyNavigationService(),
+							new EmptyRequestNavigation(),
+							cqrs,
+							cqrs,
+							new CommandEvents(),
+							new NotifyCommandStateBus(cqrs, schedulers.ThreadPool),
+							new NotifyQueryStateBus(cqrs)),
+							settingsService,
+							_container.Resolve<ISynchronizationController>()
+						);
+					viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
+					return viewModel;
+				}));
+			return _container.Resolve<ConfigurationPageViewModel>();			
 		}
 
 		private static IObservable<MusicMirrorConfiguration> GetConfigurationObservable(SettingsService settingsService)
 		{
-			return new FilterValidDirectories(new ConfigurationObservable(settingsService));			
+			return new FilterValidDirectories(new ConfigurationObservable(settingsService));
 		}
 
 		public T Resolve<T>()
@@ -136,7 +145,7 @@ namespace MusicMirror
 		private static IFileTranscoder CreateTranscoder()
 		{
 			var transcoder = new TranscoderDispatch(new DebugFileTranscoder());
-            transcoder.AddTranscoder(
+			transcoder.AddTranscoder(
 				new CopyId3TagsPostProcessor(
 				new NAudioFileTranscoder(
 					new FlacStreamReader(),
@@ -144,7 +153,7 @@ namespace MusicMirror
 					new WaveToMP3Transcoder(),
 					//new RawWaveTranscoder(),
 					//new WaveToMP3MediaFoundationTranscoder(),
-                    new AsyncOperations(new FileOperations()),
+					new AsyncOperations(new FileOperations()),
 					new AsyncDirectoryOperations(new DirectoryOperations())
 					),
 				new AudioTagsSynchronizer(
