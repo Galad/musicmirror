@@ -14,7 +14,8 @@ namespace MusicMirror
 	}
 
 	public interface ISynchronizationNotifications
-	{		
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		IObservable<IObservable<FileSynchronizationResult>> ObserveSynchronizationNotifications();
 	}
 }

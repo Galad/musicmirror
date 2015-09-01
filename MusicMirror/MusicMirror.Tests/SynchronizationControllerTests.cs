@@ -19,7 +19,6 @@ namespace MusicMirror.Tests
 {
 	public sealed class SynchronizationControllerTests
 	{
-
 		[Theory, DomainRxAutoData]
 		public void Sut_VerifyGuardClauses(GuardClauseAssertion assertion)
 		{
@@ -85,11 +84,10 @@ namespace MusicMirror.Tests
 			//assert
 			actual.Values().Should().BeEquivalentTo(new[] { false, true, false });
 		}
-
-
+		
 		[Theory, DomainRxAutoData]
 		public void ObserveSynchronizationIsEnabled_ShouldNotBeSubject(
-	  SynchronizationController sut)
+			SynchronizationController sut)
 		{			
 			//act and assert
 			sut.ObserveSynchronizationIsEnabled().As<ISubject<bool>>().Should().BeNull();
