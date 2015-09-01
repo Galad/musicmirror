@@ -8,7 +8,8 @@ namespace MusicMirror
 {
 	public interface ISynchronizationController
 	{
-		IDisposable Enable();
+		void Enable();
+		void Disable();
 		IObservable<bool> ObserveSynchronizationIsEnabled();
 	}
 

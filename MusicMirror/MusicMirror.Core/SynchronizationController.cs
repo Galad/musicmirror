@@ -38,15 +38,19 @@ namespace MusicMirror
             //return Observable.Never<IObservable<FileSynchronizationResult>>();
         }
 
-		public IDisposable Enable()
+		public void Enable()
 		{
-			_isEnabled.OnNext(true);
-			return Disposable.Create(() => _isEnabled.OnNext(false));
+			_isEnabled.OnNext(true);			
+		}
+
+		public void Disable()
+		{
+			_isEnabled.OnNext(false);
 		}
 
 		public IObservable<bool> ObserveSynchronizationIsEnabled()
 		{
-			return _isEnabled;
-		}
+			return _isEnabled.AsObservable();
+		}		
 	}
 }

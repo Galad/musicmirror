@@ -16,8 +16,7 @@ namespace MusicMirror.ViewModels
 	public sealed class ConfigurationPageViewModel : ViewModelBase
 	{
 		private readonly ISettingsService _settingsService;
-		private readonly ISynchronizationController _synchronizationController;
-		private readonly SerialDisposable _synchronizationEnabledDisposable;
+		private readonly ISynchronizationController _synchronizationController;		
 
 		public ConfigurationPageViewModel(
 			IViewModelServices services,
@@ -27,8 +26,7 @@ namespace MusicMirror.ViewModels
 			if (synchronizationController == null) throw new ArgumentNullException(nameof(synchronizationController));
 			if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
 			_settingsService = settingsService;
-			_synchronizationController = synchronizationController;
-			_synchronizationEnabledDisposable = new SerialDisposable().DisposeWith(LongDisposables);
+			_synchronizationController = synchronizationController;			
 		}
 
 		protected override void OnInitialized()
@@ -59,7 +57,7 @@ namespace MusicMirror.ViewModels
 			get
 			{
 				return CommandBuilderProvider.Get("EnableSynchronizationCommand")
-											 .Execute(() => _synchronizationEnabledDisposable.Disposable = _synchronizationController.Enable())
+											 .Execute(() => _synchronizationController.Enable())
 											 .ToCommand();
 			}
 		}
@@ -69,7 +67,7 @@ namespace MusicMirror.ViewModels
 			get
 			{
 				return CommandBuilderProvider.Get("DisableSynchronizationCommand")
-											 .Execute(() => _synchronizationEnabledDisposable.Disposable = null)
+											 .Execute(() => _synchronizationController.Disable())
 											 .ToCommand();
 			}
 		}
