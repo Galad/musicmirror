@@ -13,9 +13,10 @@ namespace MusicMirror
 		IObservable<bool> ObserveSynchronizationIsEnabled();
 	}
 
-	public interface ISynchronizationNotifications
+	public interface ITranscodingNotifications
 	{
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		IObservable<IObservable<FileSynchronizationResult>> ObserveSynchronizationNotifications();
+        IObservable<IFileNotification[]> ObserveNotifications();
+        IObservable<IFileTranscodingResultNotification> ObserveTranscodingResult();
+        IObservable<bool> ObserveIsTranscodingRunning();
 	}
 }

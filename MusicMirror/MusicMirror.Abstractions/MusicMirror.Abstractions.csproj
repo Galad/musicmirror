@@ -55,6 +55,7 @@
     <Compile Include="FileNotificationKind.cs" />
     <Compile Include="FileRenamedNotification.cs" />
     <Compile Include="FileSynchronizationResult.cs" />
+    <Compile Include="FileTranscodingResult.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="IAudioTagsSynchronizer.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="IFileObserverFactory.cs" />
     <Compile Include="IFileSynchronizerVisitor.cs" />
     <Compile Include="IFileSynchronizerVisitorFactory.cs" />
+    <Compile Include="IFileTranscodingResultNotification.cs" />
     <Compile Include="IFileWatcher.cs" />
     <Compile Include="ISynchronizationController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -99,6 +99,7 @@
     <Compile Include="FileExtensions.cs" />
     <Compile Include="FileInfoWrapper.cs" />
     <Compile Include="FileSynchronizerVisitorFactory.cs" />
+    <Compile Include="IStartSynchronizing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SymbolicLinkVisitor.cs" />
     <Compile Include="SynchronizationController.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Synchronization\SynchronizedFilesRepository.cs" />
     <Compile Include="Synchronization\SynchronizeFileService.cs" />
     <Compile Include="Synchronization\SynchronizeSymbolicLinkFile.cs" />
+    <Compile Include="SynchronizeFilesWhenFileChanged.cs" />
     <Compile Include="TranscoderDispatch.cs" />
   </ItemGroup>
   <ItemGroup>

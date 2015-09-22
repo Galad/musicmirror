@@ -44,7 +44,7 @@ namespace MusicMirror.Tests.Customizations
 	public sealed class FileCompositeCustomization : CompositeCustomization
 	{
 		public FileCompositeCustomization()
-			: base(new HannoCustomization(), new FileCustomization())
+			: base(new Hanno.Testing.Autofixture.HannoCustomization(), new FileCustomization())
 		{
 		}
 	}

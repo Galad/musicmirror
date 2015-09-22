@@ -9,7 +9,7 @@ namespace MusicMirror.Synchronization
 	{
 		Task<FileInfo> GetMirroredFilePath(CancellationToken ct, FileInfo sourceFile);
 		Task<DateTimeOffset> GetLastSynchronization(CancellationToken ct, FileInfo sourceFile);
-		Task AddSynchronization(CancellationToken ct, FileInfo sourceFile, DateTimeOffset synchronizationTime);
+		Task AddSynchronization(CancellationToken ct, FileInfo sourceFile);
 		Task DeleteSynchronization(CancellationToken ct, FileInfo fileInfo);
 	}
 }

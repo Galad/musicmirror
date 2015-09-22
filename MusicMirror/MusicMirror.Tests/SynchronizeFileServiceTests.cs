@@ -82,8 +82,7 @@ namespace MusicMirror.Tests
 			//assert
 			syncFilesRepository.Verify(f => f.AddSynchronization(
 				It.IsAny<CancellationToken>(),
-				newFilePath.File,
-				It.IsAny<DateTimeOffset>()));
+				newFilePath.File));
 		}
 
 		[Theory, FileAutoData]
@@ -209,8 +208,7 @@ namespace MusicMirror.Tests
 			syncFilesRepository.Verify(
 				s => s.AddSynchronization(
 					It.IsAny<CancellationToken>(),
-					It.Is<FileInfo>(f => c.Equals(f, sourceFilePath.File)),
-					It.IsAny<DateTimeOffset>()
+					It.Is<FileInfo>(f => c.Equals(f, sourceFilePath.File))
 					)
 				);
 		}

@@ -39,6 +39,11 @@ namespace MusicMirror.FunctionalTests.Utils
 			if (!Directory.Exists(TargetDirectory)) { Directory.CreateDirectory(TargetDirectory); }
 		}
 
+		public async Task Load(CancellationToken ct)
+		{
+			await _viewModel.Load(ct);
+		}
+
 		public void Dispose()
 		{
 			_composer.Dispose();
@@ -90,7 +95,7 @@ namespace MusicMirror.FunctionalTests.Utils
 		}		
 
 		public ISynchronizationController SynchronizationController { get { return _composer.Resolve<ISynchronizationController>(); } }
-		public ISynchronizationNotifications SynchronizationNotifications { get { return _composer.Resolve<ISynchronizationNotifications>(); } }
+		public ITranscodingNotifications SynchronizationNotifications { get { return _composer.Resolve<ITranscodingNotifications>(); } }
 
 		public ConfigurationPageViewModel ViewModel
 		{

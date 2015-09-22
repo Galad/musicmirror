@@ -150,9 +150,9 @@
     <Compile Include="Logging\LoggingFileTranscoder.cs" />
     <Compile Include="MessageBoxMessageDialog.cs" />
     <Compile Include="SettingsConstants.cs" />
-    <Compile Include="SynchronizeFilesWhenFileChanged.cs" />
     <Compile Include="UnityAsyncDataTableFactory.cs" />
     <Compile Include="ViewModels\ConfigurationPageViewModel.cs" />
+    <Compile Include="ViewModels\SynchronizedFilesCount.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

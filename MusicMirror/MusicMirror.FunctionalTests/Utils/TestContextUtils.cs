@@ -99,5 +99,10 @@ namespace MusicMirror.FunctionalTests.Utils
 		{
 			return new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
 		}
+
+		public static CancellationToken CreateLongTimedOutCancellationToken()
+		{
+			return new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
+		}
 	}
 }

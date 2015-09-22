@@ -49,7 +49,7 @@ namespace MusicMirror.Synchronization
 			var sourceFile = await _synchronizedFilesRepository.GetMirroredFilePath(ct, oldFile);
 			var targetFile = await _synchronizedFilesRepository.GetMirroredFilePath(ct, newFile);
 			await _asyncFileOperations.Move(sourceFile.FullName, targetFile.FullName);
-			await _synchronizedFilesRepository.AddSynchronization(ct, newFile, NowContext.Current.Now);
+			await _synchronizedFilesRepository.AddSynchronization(ct, newFile);
 			await _synchronizedFilesRepository.DeleteSynchronization(ct, oldFile);
 		}
 
@@ -79,7 +79,7 @@ namespace MusicMirror.Synchronization
 		{
 			var mirroredFile = await _synchronizedFilesRepository.GetMirroredFilePath(ct, file);
 			await _fileSynchronizer.Synchronize(ct, new FileInfoWrapper(file));
-			await _synchronizedFilesRepository.AddSynchronization(ct, file, NowContext.Current.Now);
+			await _synchronizedFilesRepository.AddSynchronization(ct, file);
 		}
 
 		public Task<bool> HasMirroredFileForPath(CancellationToken ct, FileInfo file)

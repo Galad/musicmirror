@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -10,83 +11,100 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-	public sealed class SynchronizationController : ISynchronizationController, ISynchronizationNotifications, IDisposable
-	{
-		private readonly IScheduler _scheduler;
-		private readonly ReplaySubject<bool> _isEnabled;
+    public sealed class SynchronizationController : ISynchronizationController, IDisposable
+    {
+        private readonly IScheduler _scheduler;
+        private readonly ReplaySubject<IDisposable> _enabledDisposable;
+        private readonly IStartSynchronizing _startSynchronizing;
+        private readonly IDisposable _disposable;
+        private readonly ITranscodingNotifications _transcodingNotifications;
 
-		public IScheduler Scheduler
-		{
-			get
-			{
-				return _scheduler;
-			}
-		}
-
-		public SynchronizationController(IScheduler scheduler)
-		{
-			if (scheduler == null)throw new ArgumentNullException(nameof(scheduler));
-			_scheduler = scheduler;
-			_isEnabled = new ReplaySubject<bool>(1, _scheduler);
-			_isEnabled.OnNext(false);
-		}
-
-		public IObservable<IObservable<FileSynchronizationResult>> ObserveSynchronizationNotifications()
-		{
-			return Observable.Return(Observable.Empty<FileSynchronizationResult>());
-			//return Observable.Empty<IObservable<FileSynchronizationResult>>();
-            //return Observable.Never<IObservable<FileSynchronizationResult>>();
+        public IScheduler Scheduler
+        {
+            get
+            {
+                return _scheduler;
+            }
         }
 
-		public void Enable()
-		{
-			_isEnabled.OnNext(true);			
-		}
+        public IStartSynchronizing StartSynchronizing
+        {
+            get
+            {
+                return _startSynchronizing;
+            }
+        }
 
-		public void Disable()
-		{
-			_isEnabled.OnNext(false);
-		}
+        public ITranscodingNotifications TranscodingNotifications
+        {
+            get
+            {
+                return _transcodingNotifications;
+            }
+        }
 
-		public IObservable<bool> ObserveSynchronizationIsEnabled()
-		{
-			return _isEnabled.AsObservable();
-		}
+        public SynchronizationController(
+            IScheduler scheduler, 
+            IStartSynchronizing startSynchronizing,
+            ITranscodingNotifications transcodingNotifications)
+        {
+            if (transcodingNotifications == null) throw new ArgumentNullException(nameof(transcodingNotifications), $"{nameof(transcodingNotifications)} is null.");
+            if (startSynchronizing == null) throw new ArgumentNullException(nameof(startSynchronizing), $"{nameof(startSynchronizing)} is null.");
+            if (scheduler == null) throw new ArgumentNullException(nameof(scheduler));
+            _scheduler = scheduler;
+            _startSynchronizing = startSynchronizing;
+            _transcodingNotifications = transcodingNotifications;
+            _enabledDisposable = new ReplaySubject<IDisposable>(1, _scheduler);
+            _enabledDisposable.OnNext(null);
+            _disposable = _enabledDisposable.Delta((d1, d2) =>
+            {
+                if (d1 != null)
+                {                    
+                    d1.Dispose();
+                }
+                return d1 != null || d2 != null;
+            })
+                .TakeWhile(b => b)
+                .SubscribeOn(_scheduler)
+                .Subscribe(_ => { }, e => { });
+        }
 
-		#region IDisposable Support
-		private bool disposedValue = false; // Pour détecter les appels redondants
+        public void Enable()
+        {
+            _enabledDisposable.OnNext(StartSynchronizing.Start());
+        }
 
-		void Dispose(bool disposing)
-		{
-			if (!disposedValue)
-			{
-				if (disposing)
-				{
-					// TODO: supprimer l'état managé (objets managés).
-					_isEnabled.Dispose();
-				}
+        public void Disable()
+        {
+            _enabledDisposable.OnNext(null);
+        }
 
-				// TODO: libérer les ressources non managées (objets non managés) et remplacer un finaliseur ci-dessous.
-				// TODO: définir les champs de grande taille avec la valeur Null.
+        public IObservable<bool> ObserveSynchronizationIsEnabled()
+        {
+            return _enabledDisposable.Select(d => d != null);
+        }
 
-				disposedValue = true;
-			}
-		}
+        #region IDisposable Support
+        private bool disposedValue = false;        
 
-		// TODO: remplacer un finaliseur seulement si la fonction Dispose(bool disposing) ci-dessus a du code pour libérer les ressources non managées.
-		// ~SynchronizationController() {
-		//   // Ne modifiez pas ce code. Placez le code de nettoyage dans Dispose(bool disposing) ci-dessus.
-		//   Dispose(false);
-		// }
+        void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _enabledDisposable.OnNext(null);
+                    _enabledDisposable.OnNext(null);
+                    _enabledDisposable.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
 
-		// Ce code est ajouté pour implémenter correctement le modèle supprimable.
-		public void Dispose()
-		{
-			// Ne modifiez pas ce code. Placez le code de nettoyage dans Dispose(bool disposing) ci-dessus.
-			Dispose(true);
-			// TODO: supprimer les marques de commentaire pour la ligne suivante si le finaliseur est remplacé ci-dessus.
-			// GC.SuppressFinalize(this);
-		}
-		#endregion
-	}
+        public void Dispose()
+        {
+            Dispose(true);
+        }        
+        #endregion
+    }
 }

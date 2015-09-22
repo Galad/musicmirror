@@ -61,12 +61,14 @@ namespace MusicMirror.Tests
 
 		[Theory, FileAutoData]
 		public async Task GetLastSynchronization_WhenAddingSynchronization_ShouldReturnCorrectValue(
+            [Frozen]Mock<INow> now,
 			SynchronizedFilesRepository sut,
 			FileInfo file,
 			DateTimeOffset expected)
 		{
-			//arrange
-			await sut.AddSynchronization(CancellationToken.None, file, expected);
+            //arrange
+            now.Setup(n => n.Now).Returns(expected);
+			await sut.AddSynchronization(CancellationToken.None, file);
 			//act
 			var actual = await sut.GetLastSynchronization(CancellationToken.None, file);
 			//assert
@@ -89,12 +91,11 @@ namespace MusicMirror.Tests
 		[Theory, FileAutoData]
 		public async Task DeleteSynchronization_WhenAddingSynchronizationThenRemoving_ShouldReturnCorrectValue(
 			SynchronizedFilesRepository sut,
-			FileInfo file,
-			DateTimeOffset time)
+			FileInfo file)
 		{
 			//arrange
 			var expected = DateTimeOffset.MinValue;
-			await sut.AddSynchronization(CancellationToken.None, file, time);
+			await sut.AddSynchronization(CancellationToken.None, file);
 			await sut.DeleteSynchronization(CancellationToken.None, file);
 			//act
 			var actual = await sut.GetLastSynchronization(CancellationToken.None, file);

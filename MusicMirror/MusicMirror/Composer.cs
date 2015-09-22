@@ -31,175 +31,176 @@ using NLog;
 
 namespace MusicMirror
 {
-    public sealed class AppComposer : Composer
-    {
-        public AppComposer() : base(() => new WpfSchedulers(
-                DispatcherScheduler.Current,
-                new SingleSchedulerPriorityScheduler(DispatcherScheduler.Current),
+	public sealed class AppComposer : Composer
+	{
+		public AppComposer() : base(() => new WpfSchedulers(
+			DispatcherScheduler.Current,
+			new SingleSchedulerPriorityScheduler(DispatcherScheduler.Current),
                 new SingleSchedulerPriorityScheduler(ThreadPoolScheduler.Instance)),
             new LoggingComposer())
-        {
-        }
-    }
-    public abstract class Composer : IDisposable
-    {
-        private readonly UnityContainer _container;
-        private readonly Func<ISchedulers> _schedulers;
+		{
+		}
+	}
+	public abstract class Composer : IDisposable
+	{
+		private readonly UnityContainer _container;
+		private readonly Func<ISchedulers> _schedulers;
         private readonly LoggingComposer _loggingComposer;
 
         protected Composer(Func<ISchedulers> schedulers, LoggingComposer loggingComposer)
-        {
-            _schedulers = Guard.ForNull(schedulers, nameof(schedulers));
-            _container = new UnityContainer();
+		{
+			_schedulers = Guard.ForNull(schedulers, nameof(schedulers));
+			_container = new UnityContainer();
             _loggingComposer = loggingComposer;
-        }
+		}
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Composition root")]
-        public ConfigurationPageViewModel Compose()
-        {
-            MediaFoundationApi.Startup();
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Composition root")]
+		public ConfigurationPageViewModel Compose()
+		{
+			MediaFoundationApi.Startup();
             _loggingComposer.Compose(_container);
-            var schedulers = _schedulers();
-            var cqrs = new AsyncCommandQueryBus(
-                new UnityCommandQueryHandlerFactory(_container),
-                new UnityCommandQueryHandlerFactory(_container));
-            var serializer = new XmlSerializer();
-            _container.RegisterType(
-                typeof(IAsyncDataTable<,>),
-                typeof(AsyncFromStringKeyValuePairFilesDataTable<,>),
-                "Settings",
-                new InjectionConstructor(
-                    new InjectionParameter(new SafeStringSerializer(serializer)),
-                    new InjectionParameter(new SafeStringDeserializer(serializer)),
-                    new InjectionParameter(new AsyncOperations(new FileOperations())),
-                    new InjectionParameter(new AsyncDirectoryOperations(new DirectoryOperations())),
-                    new InjectionParameter(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings")),
-                    new InjectionParameter(typeof(string), default(string))));
-            var settingsService = new SettingsService(
-                schedulers.ThreadPool,
-                new AsyncStorage(
-                    new UnityAsyncDataTableFactory(
-                        _container,
-                        "Settings")));
+			var schedulers = _schedulers();
+			var cqrs = new AsyncCommandQueryBus(
+				new UnityCommandQueryHandlerFactory(_container),
+				new UnityCommandQueryHandlerFactory(_container));
+			var serializer = new XmlSerializer();
+			_container.RegisterType(
+				typeof(IAsyncDataTable<,>),
+				typeof(AsyncFromStringKeyValuePairFilesDataTable<,>),
+				"Settings",
+				new InjectionConstructor(
+					new InjectionParameter(new SafeStringSerializer(serializer)),
+					new InjectionParameter(new SafeStringDeserializer(serializer)),
+					new InjectionParameter(new AsyncOperations(new FileOperations())),
+					new InjectionParameter(new AsyncDirectoryOperations(new DirectoryOperations())),
+					new InjectionParameter(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings")),
+					new InjectionParameter(typeof(string), default(string))));
+			var settingsService = new SettingsService(
+				schedulers.ThreadPool,
+				new AsyncStorage(
+					new UnityAsyncDataTableFactory(
+						_container,
+						"Settings")));
 
-            _container.RegisterType<IObservable<Unit>>(
-            "SynchronizeFilesWhenFileChanged",
-            new ContainerControlledLifetimeManager(),
-            new InjectionFactory(c =>
-        new SynchronizeFilesWhenFileChanged(
-            GetConfigurationObservable(settingsService),
-            new FileObserverFactory(new FileWatcher()),
-            new LoggingFileSynchronizerVisitorFactory(
+			_container.RegisterType<IObservable<Unit>>(
+			"SynchronizeFilesWhenFileChanged",
+			new ContainerControlledLifetimeManager(),
+			new InjectionFactory(c =>
+		new SynchronizeFilesWhenFileChanged(
+			GetConfigurationObservable(settingsService),
+			new FileObserverFactory(new FileWatcher()),
+			new LoggingFileSynchronizerVisitorFactory(
                 new FileSynchronizerVisitorFactory(CreateTranscoder(c)),
-                //new EmptyFileSynchronizerVisitorFactory(),
+				//new EmptyFileSynchronizerVisitorFactory(),
                 c.Resolve<Func<string, ILogger>>()("IFileSynchronizerVisitor")
-                ))));
+                ), schedulers.ThreadPool)));
 
-            _container.RegisterType<SynchronizationController>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionFactory(c => new SynchronizationController(schedulers.ThreadPool)
-                ));
-            _container.RegisterType<ISynchronizationController, SynchronizationController>();
-            _container.RegisterType<ISynchronizationNotifications, SynchronizationController>();
+			_container.RegisterType<SynchronizationController>(
+				new ContainerControlledLifetimeManager(),
+				new InjectionFactory(c => new SynchronizationController(schedulers.ThreadPool, null, null)
+				));
+			_container.RegisterType<ISynchronizationController, SynchronizationController>();
+			//_container.RegisterType<ISynchronizationNotifications, SynchronizationController>();
 
-            _container.RegisterType<ConfigurationPageViewModel>(
-                new InjectionFactory(c =>
-                {
-                    var viewModel = new ConfigurationPageViewModel(
-                        new ViewModelServices(
-                            new NoRuleProvider(),
-                            new DefaultObservableRegistrationService(
-                                new MessageBoxAsyncMessageDialog(),
-                                new StringResources()),
-                            new PropertyValidator(),
-                            schedulers,
-                            new EmptyNavigationService(),
-                            new EmptyRequestNavigation(),
-                            cqrs,
-                            cqrs,
-                            new CommandEvents(),
-                            new NotifyCommandStateBus(cqrs, schedulers.ThreadPool),
-                            new NotifyQueryStateBus(cqrs)),
-                            settingsService,
-                            _container.Resolve<ISynchronizationController>()
-                        );
-                    viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
-                    return viewModel;
-                }));
+			_container.RegisterType<ConfigurationPageViewModel>(
+				new InjectionFactory(c =>
+				{
+					var viewModel = new ConfigurationPageViewModel(
+						new ViewModelServices(
+							new NoRuleProvider(),
+							new DefaultObservableRegistrationService(
+								new MessageBoxAsyncMessageDialog(),
+								new StringResources()),
+							new PropertyValidator(),
+							schedulers,
+							new EmptyNavigationService(),
+							new EmptyRequestNavigation(),
+							cqrs,
+							cqrs,
+							new CommandEvents(),
+							new NotifyCommandStateBus(cqrs, schedulers.ThreadPool),
+							new NotifyQueryStateBus(cqrs)),
+							settingsService,
+							_container.Resolve<ISynchronizationController>(),
+                            _container.Resolve<ITranscodingNotifications>()
+						);
+					viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
+					return viewModel;
+				}));
 
             var l = _container.Resolve<Func<string, ILogger>>()("Test");
-            return _container.Resolve<ConfigurationPageViewModel>();
-        }
+			return _container.Resolve<ConfigurationPageViewModel>();			
+		}
 
-        private static IObservable<MusicMirrorConfiguration> GetConfigurationObservable(SettingsService settingsService)
-        {
-            return new FilterValidDirectories(new ConfigurationObservable(settingsService));
-        }
+		private static IObservable<MusicMirrorConfiguration> GetConfigurationObservable(SettingsService settingsService)
+		{
+			return new FilterValidDirectories(new ConfigurationObservable(settingsService));
+		}
 
-        public T Resolve<T>()
-        {
-            return _container.Resolve<T>();
-        }
+		public T Resolve<T>()
+		{
+			return _container.Resolve<T>();
+		}
 
-        public T Resolve<T>(string name)
-        {
-            return _container.Resolve<T>(name);
-        }
+		public T Resolve<T>(string name)
+		{
+			return _container.Resolve<T>(name);
+		}
 
         public string SessionId { get { return _loggingComposer.SessionId; } }
 
         private static IFileTranscoder CreateTranscoder(IUnityContainer container)
-        {
-            var transcoder = new TranscoderDispatch(new DebugFileTranscoder());
-            transcoder.AddTranscoder(
-                new CopyId3TagsPostProcessor(
-                new NAudioFileTranscoder(
-                    new FlacStreamReader(),
-                    //new FlacStreamReaderInternalNAudioFlac(),
-                    new WaveToMP3Transcoder(),
-                    //new RawWaveTranscoder(),
-                    //new WaveToMP3MediaFoundationTranscoder(),
-                    new AsyncOperations(new FileOperations()),
-                    new AsyncDirectoryOperations(new DirectoryOperations())
-                    ),
-                new AudioTagsSynchronizer(
-                    new AsyncOperations(new FileOperations()),
-                    new FlacTagLibReaderWriter(),
-                    new MP3TagLibReaderWriter()
-                )),
-                AudioFormat.Flac);
+		{
+			var transcoder = new TranscoderDispatch(new DebugFileTranscoder());
+			transcoder.AddTranscoder(
+				new CopyId3TagsPostProcessor(
+				new NAudioFileTranscoder(
+					new FlacStreamReader(),
+					//new FlacStreamReaderInternalNAudioFlac(),
+					new WaveToMP3Transcoder(),
+					//new RawWaveTranscoder(),
+					//new WaveToMP3MediaFoundationTranscoder(),
+					new AsyncOperations(new FileOperations()),
+					new AsyncDirectoryOperations(new DirectoryOperations())
+					),
+				new AudioTagsSynchronizer(
+					new AsyncOperations(new FileOperations()),
+					new FlacTagLibReaderWriter(),
+					new MP3TagLibReaderWriter()
+				)),
+				AudioFormat.Flac);
             return new LoggingFileTranscoder(transcoder, container.Resolve<Func<string, ILogger>>()("IFileTranscoder"));
-        }
+		}
 
-        #region IDisposable
-        bool disposed = false;
+		#region IDisposable
+		bool disposed = false;
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 
-        // Protected implementation of Dispose pattern. 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed)
-                return;
+		// Protected implementation of Dispose pattern. 
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposed)
+				return;
 
-            if (disposing)
-            {
-                _container.Dispose();
-                MediaFoundationApi.Shutdown();
-                // Free any other managed objects here. 
-                //
-            }
+			if (disposing)
+			{
+				_container.Dispose();
+				MediaFoundationApi.Shutdown();
+				// Free any other managed objects here. 
+				//
+			}
 
-            // Free any unmanaged objects here. 
-            //
-            disposed = true;
-        }
+			// Free any unmanaged objects here. 
+			//
+			disposed = true;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

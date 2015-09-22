@@ -4,6 +4,7 @@ using MusicMirror.Synchronization;
 
 using System.Threading;
 using System.Threading.Tasks;
+using Hanno;
 
 namespace MusicMirror
 {
@@ -57,7 +58,8 @@ namespace MusicMirror
 		{
 			var fileSynchronizerRepository = new SynchronizedFilesRepository(
 				_transcoder,
-				configuration);
+				configuration,
+                new SystemUtcNow());
 			var fileOperations = new AsyncOperations(new FileOperations());
 			var transcodingMirroredFileOperations = new SynchronizeFileService(
 					fileOperations,
