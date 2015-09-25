@@ -41,7 +41,9 @@ namespace MusicMirror.FunctionalTests.Utils
 
 	public class TestComposer : Composer
 	{
-		public TestComposer() : base(() => new SingleSchedulers(new SingleSchedulerPriorityScheduler(ThreadPoolScheduler.Instance)))
+		public TestComposer(string loggingSessionId) : base(
+            () => new SingleSchedulers(new SingleSchedulerPriorityScheduler(ThreadPoolScheduler.Instance)),
+                  new LoggingComposer(loggingSessionId))
 		{ }
 	}
 
@@ -55,10 +57,11 @@ namespace MusicMirror.FunctionalTests.Utils
 		{
 			fixture.Register(() =>
 			{
-				var uniqueTestFolder = Path.Combine(Environment.CurrentDirectory, TestFileRootFolder, Guid.NewGuid().ToString());
+                var sessionId = Guid.NewGuid().ToString();
+                var uniqueTestFolder = Path.Combine(Environment.CurrentDirectory, TestFileRootFolder, sessionId);
 				var testFilesFolder = Path.Combine(Environment.CurrentDirectory, ReferenceTestFileRootFolder);
-				Debug.WriteLine($"DebugTestFolder is {uniqueTestFolder}");
-				return new TestContext(new TestComposer(), new TestFilesRepository(testFilesFolder), uniqueTestFolder);
+                Debug.WriteLine($"DebugTestFolder is {uniqueTestFolder}");
+				return new TestContext(new TestComposer(sessionId), new TestFilesRepository(testFilesFolder), uniqueTestFolder);
 			});
 			fixture.Freeze<TestContext>();
 		}

@@ -21,7 +21,6 @@ using MusicMirror.Synchronization;
 using MusicMirror.ViewModels;
 using MusicMirror.Transcoding;
 using MusicMirror.Logging;
-using log4net;
 using System.Reactive;
 
 namespace MusicMirror

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using log4net;
 
 
 namespace MusicMirror.Logging
@@ -12,9 +12,9 @@ namespace MusicMirror.Logging
 	public sealed class LoggingFileSynchronizerVisitorFactory : IFileSynchronizerVisitorFactory
 	{
 		private readonly IFileSynchronizerVisitorFactory _innerFactory;
-		private readonly ILog _log;
+		private readonly ILogger _log;
 
-		public LoggingFileSynchronizerVisitorFactory(IFileSynchronizerVisitorFactory innerFactory, ILog log)
+		public LoggingFileSynchronizerVisitorFactory(IFileSynchronizerVisitorFactory innerFactory, ILogger log)
 		{
 			_innerFactory = Guard.ForNull(innerFactory, nameof(innerFactory));
 			_log = Guard.ForNull(log, nameof(log));
@@ -29,9 +29,9 @@ namespace MusicMirror.Logging
 	public sealed class LoggingFileSynchronizerVisitor : IFileSynchronizerVisitor
 	{
 		private readonly IFileSynchronizerVisitor _innerVisitor;
-		private readonly ILog _log;
+		private readonly ILogger _log;
 
-		public LoggingFileSynchronizerVisitor(IFileSynchronizerVisitor innerVisitor, ILog log)
+		public LoggingFileSynchronizerVisitor(IFileSynchronizerVisitor innerVisitor, ILogger log)
 		{
 			_innerVisitor = Guard.ForNull(innerVisitor, nameof(innerVisitor));
 			_log = Guard.ForNull(log, nameof(log));
@@ -86,7 +86,7 @@ namespace MusicMirror.Logging
 			}
 			catch (Exception ex)
 			{
-				_log.Error("Error while visiting " + notification.Kind, ex);
+				_log.Error(ex, "Error while visiting " + notification.Kind);
 				throw;
 			}
 		}

@@ -5,18 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using log4net;
 using MusicMirror.Synchronization;
-
+using NLog;
 
 namespace MusicMirror.Logging
 {
 	public sealed class LoggingFileTranscoder : IFileTranscoder
 	{
-		private readonly ILog _log;
+		private readonly ILogger _log;
 		private readonly IFileTranscoder _fileTranscoder;
 
-		public LoggingFileTranscoder(IFileTranscoder fileTranscoder, ILog log)
+		public LoggingFileTranscoder(IFileTranscoder fileTranscoder, ILogger log)
 		{
 			_fileTranscoder = Guard.ForNull(fileTranscoder, nameof(fileTranscoder));
 			_log = Guard.ForNull(log, nameof(log));
@@ -31,15 +30,15 @@ namespace MusicMirror.Logging
 		{
 			var sourceFileName = sourceFile.FullName;
 			var targetFileName = GetTranscodedFileName(sourceFile.FullName);
-            _log.InfoFormat("Transcoding file {0} to {1}", sourceFileName, targetFileName);
+            _log.Info("Transcoding file {0} to {1}", sourceFileName, targetFileName);
 			try
 			{
 				await _fileTranscoder.Transcode(ct, sourceFile, format, targetDirectory);
-				_log.InfoFormat("Transcoding complete for file", sourceFileName, targetFileName);
+				_log.Info("Transcoding complete for file", sourceFileName, targetFileName);
 			}
 			catch (Exception ex)
 			{
-				_log.Error("Error while logging file " + sourceFile, ex);
+				_log.Error(ex, "Error while logging file " + sourceFile);
 				throw;
 			}			
 		}
