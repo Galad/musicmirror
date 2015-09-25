@@ -7,7 +7,7 @@ using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 using Xunit.Extensions;
 using Moq;
-
+using Hanno.Testing.Autofixture;
 
 namespace MusicMirror.Tests.Customizations
 {
@@ -44,7 +44,7 @@ namespace MusicMirror.Tests.Customizations
 	public sealed class FileCompositeCustomization : CompositeCustomization
 	{
 		public FileCompositeCustomization()
-			: base(new Hanno.Testing.Autofixture.HannoCustomization(), new FileCustomization())
+			: base(new Hanno.Testing.Autofixture.HannoCustomization(), new FileCustomization(), new RxCustomization())
 		{
 		}
 	}

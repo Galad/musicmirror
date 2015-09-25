@@ -24,9 +24,9 @@ using MusicMirror.Logging;
 using MusicMirror.Synchronization;
 using MusicMirror.Transcoding;
 using MusicMirror.ViewModels;
-
 using System.Reactive;
 using NAudio.MediaFoundation;
+using System.Threading;
 using NLog;
 
 namespace MusicMirror
@@ -58,8 +58,8 @@ namespace MusicMirror
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Composition root")]
 		public ConfigurationPageViewModel Compose()
 		{
-			MediaFoundationApi.Startup();
-            _loggingComposer.Compose(_container);
+            MediaFoundationApiStarter.Start();
+            _loggingComposer.Compose(_container);            
 			var schedulers = _schedulers();
 			var cqrs = new AsyncCommandQueryBus(
 				new UnityCommandQueryHandlerFactory(_container),
@@ -83,8 +83,7 @@ namespace MusicMirror
 						_container,
 						"Settings")));
 
-			_container.RegisterType<IObservable<Unit>>(
-			"SynchronizeFilesWhenFileChanged",
+            _container.RegisterType<SynchronizeFilesWhenFileChanged>(
 			new ContainerControlledLifetimeManager(),
 			new InjectionFactory(c =>
 		new SynchronizeFilesWhenFileChanged(
@@ -96,12 +95,16 @@ namespace MusicMirror
                 c.Resolve<Func<string, ILogger>>()("IFileSynchronizerVisitor")
                 ), schedulers.ThreadPool)));
 
-			_container.RegisterType<SynchronizationController>(
+            _container.RegisterType<ITranscodingNotifications, SynchronizeFilesWhenFileChanged>();
+            _container.RegisterType<IStartSynchronizing, SynchronizeFilesWhenFileChanged>();
+
+            _container.RegisterType<ISynchronizationController>(
 				new ContainerControlledLifetimeManager(),
-				new InjectionFactory(c => new SynchronizationController(schedulers.ThreadPool, null, null)
+                new InjectionFactory(c => new SynchronizationController(
+                    schedulers.ThreadPool, 
+                    _container.Resolve<IStartSynchronizing>(), 
+                    _container.Resolve<ITranscodingNotifications>())
 				));
-			_container.RegisterType<ISynchronizationController, SynchronizationController>();
-			//_container.RegisterType<ISynchronizationNotifications, SynchronizationController>();
 
 			_container.RegisterType<ConfigurationPageViewModel>(
 				new InjectionFactory(c =>
@@ -203,4 +206,18 @@ namespace MusicMirror
 
 		#endregion
 	}
+
+    public static class MediaFoundationApiStarter
+    {
+        private static int _isStarted;
+
+        public static void Start()
+        {
+            var isStarted = Interlocked.Exchange(ref _isStarted, 1);
+            if(isStarted == 0)
+            {
+                MediaFoundationApi.Startup();
+            }
+        }
+    }
 }

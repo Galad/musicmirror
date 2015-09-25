@@ -120,6 +120,7 @@
     <None Include="..\MusicMirror\MusicMirror.ruleset">
       <Link>MusicMirror.ruleset</Link>
     </None>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

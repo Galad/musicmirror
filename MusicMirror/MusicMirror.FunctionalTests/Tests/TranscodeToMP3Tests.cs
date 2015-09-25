@@ -14,7 +14,7 @@ using Xunit;
 namespace MusicMirror.FunctionalTests.Tests
 {
 	[Trait("TestLevel", "Functional")]
-	public class TranscodeToMP3Tests : IDisposable
+	public class TranscodeToMP3Tests : IDisposable, IAsyncLifetime
 	{
 		private readonly IFixture _fixture;
 		private readonly TestContext _context;
@@ -30,7 +30,17 @@ namespace MusicMirror.FunctionalTests.Tests
 			_context.Dispose();
 		}
 
-		[Theory,
+        public async Task InitializeAsync()
+        {
+            await _context.Load(CancellationToken.None);
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.FromResult(true);
+        }
+
+        [Theory,
 			InlineData(TestFilesConstants.MP3.SourceNormalFile1, TestFilesConstants.MP3.NormalFile1),
 			InlineData(TestFilesConstants.Flac.SourceNormalFile1, TestFilesConstants.MP3.NormalFile1)
 		]
@@ -41,7 +51,7 @@ namespace MusicMirror.FunctionalTests.Tests
 					.WithFile(file);
 
 			//act
-			await _context.ExecuteSynchronization(CancellationToken.None);
+			await _context.ExecuteSynchronization(TestContextUtils.CreateLongTimedOutCancellationToken());
 			//assert
 			_context.AssertThatTargetFileExistInTargetDirectory(expectedFileName);
 		}
@@ -57,7 +67,7 @@ namespace MusicMirror.FunctionalTests.Tests
 					.WithFile(file);
 
 			//act
-			await _context.ExecuteSynchronization(CancellationToken.None);
+			await _context.ExecuteSynchronization(TestContextUtils.CreateLongTimedOutCancellationToken());
 			//assert
 			_context.AssertThatTargetFileHasTheCorrectDuration(Path.GetFileName(file), expectedFileName);
 		}
@@ -72,11 +82,11 @@ namespace MusicMirror.FunctionalTests.Tests
 					.WithFile(file);
 
 			//act
-			await _context.ExecuteSynchronization(CancellationToken.None);
+			await _context.ExecuteSynchronization(TestContextUtils.CreateLongTimedOutCancellationToken());
 			//assert
 			var expectedFileDuration = TestContextUtils.GetFileDurationFlac(_context.GetSourceFileFromRelativePath(Path.GetFileName(file)));
 			var actualFileDuration = TestContextUtils.GetMediaFoundationDurationMP3(_context.GetTargetFileFromRelativePath(expectedFileName));
 			expectedFileDuration.Should().BeCloseTo(actualFileDuration, 5000);
         }
-	}
+    }
 }

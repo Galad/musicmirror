@@ -147,7 +147,7 @@ namespace MusicMirror.FunctionalTests.Tests
 			actual.Should().BeTrue();
 		}
 
-		[Theory(Skip = "No ready"), MemberData("SynchronizationEnabledTestFiles")]
+		[Theory, MemberData("SynchronizationEnabledTestFiles")]
 		public async Task WhenSynchronizationIsEnabled_AndThereIsFilesInTheTargetFolder_ThenTheSynchronizationStatusYieldTheCorrectValue(
 			string[] files)
 		{
@@ -156,25 +156,31 @@ namespace MusicMirror.FunctionalTests.Tests
 			var scheduler = new TestScheduler();
 			var observer = scheduler.CreateObserver<SynchronizedFilesCountViewModel>();
 			using (_context.ViewModel.SynchronizedFileCount.Subscribe(observer))
-			{
-				var task = _context.ViewModel.IsTranscodingRunning
-									.Where(b => b)
-									.Take(1)
-									.Timeout(5.Seconds())
-									.SelectMany(_ => _context.ViewModel.IsTranscodingRunning)
-									.Where(b => !b)
-									.Take(1)
-									.ToTask(TestContextUtils.CreateLongTimedOutCancellationToken());
-				_context.ViewModel.EnableSynchronizationCommand.Execute(null);
-				await task;
-			}
-			var actual = observer.Values();
+            {
+                Task<bool> task = WaitUntilTranscodingComplete();                
+                _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+                await task;
+                await Task.Delay(1.Seconds());
+            }
+            var actual = observer.Values();
 			//assert
 			var expected = new[] { SynchronizedFilesCountViewModel.Empty }
 							.Concat(files.Select((f, i) => new SynchronizedFilesCountViewModel(i, files.Length)))
 							.Concat(new[] { new SynchronizedFilesCountViewModel(files.Length, files.Length) });
-			actual.ShouldBeEquivalentTo(expected);
+			actual.ShouldAllBeEquivalentTo(expected);
 		}
+
+        private Task<bool> WaitUntilTranscodingComplete()
+        {
+            return _context.ViewModel.IsTranscodingRunning
+                                     .Where(b => b)
+                                     .Take(1)
+                                     .Timeout(5.Seconds())
+                                     .SelectMany(_ => _context.ViewModel.IsTranscodingRunning)
+                                     .Where(b => !b)
+                                     .Take(1)
+                                     .ToTask(TestContextUtils.CreateLongTimedOutCancellationToken());
+        }
 
 		//[Fact]
 		//public async Task WhenIStartTheSynchronization_IShouldReceiveANotification()

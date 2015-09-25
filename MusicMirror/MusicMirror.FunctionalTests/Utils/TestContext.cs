@@ -36,13 +36,16 @@ namespace MusicMirror.FunctionalTests.Utils
 			_targetDirectory = Path.Combine(_rootFolder, "Target");
 			_testFilesRepository = testFilesRepository;
 			if (!Directory.Exists(SourceDirectory)) { Directory.CreateDirectory(SourceDirectory); }
-			if (!Directory.Exists(TargetDirectory)) { Directory.CreateDirectory(TargetDirectory); }
-		}
+			if (!Directory.Exists(TargetDirectory)) { Directory.CreateDirectory(TargetDirectory); }            
+        }
 
 		public async Task Load(CancellationToken ct)
 		{
 			await _viewModel.Load(ct);
-		}
+            ViewModel.SourcePath.OnNext(_sourceDirectory);
+            ViewModel.TargetPath.OnNext(_targetDirectory);
+            ViewModel.SaveCommand.Execute(null);
+        }
 
 		public void Dispose()
 		{
@@ -53,7 +56,7 @@ namespace MusicMirror.FunctionalTests.Utils
 			}
 			catch (Exception ex)
 			{
-				Debug.Write(ex);
+				Debug.WriteLine(ex);
 			}
 		}
 
@@ -86,11 +89,18 @@ namespace MusicMirror.FunctionalTests.Utils
 		public async Task ExecuteSynchronization(CancellationToken ct)
 		{
 			await ViewModel.Load(ct);
-			var observable = _composer.Resolve<IObservable<Unit>>("SynchronizeFilesWhenFileChanged");
-			var synchronizationCompleteTask = observable.Take(1).ObserveOn(ThreadPoolScheduler.Instance).ToTask(ct).ConfigureAwait(false);
-			ViewModel.SourcePath.OnNext(_sourceDirectory);
-			ViewModel.TargetPath.OnNext(_targetDirectory);
-			ViewModel.SaveCommand.Execute(null);
+			var controller = _composer.Resolve<ITranscodingNotifications>();
+            var synchronizationCompleteTask = controller.ObserveIsTranscodingRunning()
+                                                        .Where(t => t)
+                                                        .Take(1)
+                                                        .Select(_ => controller.ObserveIsTranscodingRunning())
+                                                        .Switch()
+                                                        .Where(t => !t)
+                                                        .Take(1)
+                                                        .ObserveOn(ThreadPoolScheduler.Instance)                                                        
+                                                        .ToTask(ct)
+                                                        .ConfigureAwait(false);			
+            ViewModel.EnableSynchronizationCommand.Execute(null);
 			await synchronizationCompleteTask;
 		}		
 
