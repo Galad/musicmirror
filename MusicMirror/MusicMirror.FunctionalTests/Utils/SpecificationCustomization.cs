@@ -15,45 +15,34 @@ using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MusicMirror.FunctionalTests.Utils
 {
-	public class SingleSchedulers : ISchedulers
+    public sealed class TestComposer : Composer
 	{
-		private readonly IPriorityScheduler _scheduler;
-
-		public SingleSchedulers(IPriorityScheduler scheduler)
-		{
-			_scheduler = scheduler;
-		}
-
-		public IScheduler CurrentThread => _scheduler;
-		public IPriorityScheduler Dispatcher => _scheduler;
-		public IScheduler Immediate => _scheduler;
-		public IScheduler TaskPool => _scheduler;
-		public IPriorityScheduler ThreadPool => _scheduler;
-
-		public void SafeDispatch(Action action)
-		{
-			action();
-		}
-	}
-
-	public class TestComposer : Composer
-	{
-		public TestComposer(string loggingSessionId) : base(
-            () => new SingleSchedulers(new SingleSchedulerPriorityScheduler(ThreadPoolScheduler.Instance)),
-                  new LoggingComposer(loggingSessionId))
+		public TestComposer(string loggingSessionId, ITestOutputHelper output) : base(
+                  new CompositeCompositionModule(
+                      new LoggingComposer(loggingSessionId),
+                      new TestsModule(output),
+                      new TestSchedulersModule()))
 		{ }
 	}
 
 	#region Customization
-	public class SpecificationCustomization : ICustomization
+	public sealed class SpecificationCustomization : ICustomization
 	{
 		public const string ReferenceTestFileRootFolder = "TestFiles";
 		public const string TestFileRootFolder = "Tests";
+        private readonly ITestOutputHelper _output;
 
-		public void Customize(IFixture fixture)
+        public SpecificationCustomization(ITestOutputHelper output)
+        {
+            if (output == null) throw new ArgumentNullException("output");
+            _output = output;
+        }
+
+        public void Customize(IFixture fixture)
 		{
 			fixture.Register(() =>
 			{
@@ -61,7 +50,7 @@ namespace MusicMirror.FunctionalTests.Utils
                 var uniqueTestFolder = Path.Combine(Environment.CurrentDirectory, TestFileRootFolder, sessionId);
 				var testFilesFolder = Path.Combine(Environment.CurrentDirectory, ReferenceTestFileRootFolder);
                 Debug.WriteLine($"DebugTestFolder is {uniqueTestFolder}");
-				return new TestContext(new TestComposer(sessionId), new TestFilesRepository(testFilesFolder), uniqueTestFolder);
+				return new TestContext(new TestComposer(sessionId, _output), new TestFilesRepository(testFilesFolder), uniqueTestFolder);
 			});
 			fixture.Freeze<TestContext>();
 		}
@@ -69,21 +58,7 @@ namespace MusicMirror.FunctionalTests.Utils
 
 	public class SpecificationCompositeCustomization : CompositeCustomization
 	{
-		public SpecificationCompositeCustomization() : base(new SpecificationCustomization())
-		{
-		}
-	}
-
-	public class SpecificationAutoDataAttribute : AutoDataAttribute
-	{
-		public SpecificationAutoDataAttribute() : base(new Fixture().Customize(new SpecificationCompositeCustomization()))
-		{
-		}
-	}
-
-	public class SpecificationInlineAutoDataAttribute : CompositeDataAttribute
-	{
-		public SpecificationInlineAutoDataAttribute(params object[] values) : base(new InlineDataAttribute(values), new SpecificationAutoDataAttribute())
+		public SpecificationCompositeCustomization(ITestOutputHelper output) : base(new SpecificationCustomization(output))
 		{
 		}
 	}

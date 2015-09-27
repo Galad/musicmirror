@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MusicMirror.FunctionalTests.Tests
 {
@@ -24,9 +25,9 @@ namespace MusicMirror.FunctionalTests.Tests
 		private readonly IFixture _fixture;
 		private readonly TestContext _context;
 
-		public NotificationsTests()
+		public NotificationsTests(ITestOutputHelper output)
 		{
-			_fixture = new Fixture().Customize(new SpecificationCustomization());
+			_fixture = new Fixture().Customize(new SpecificationCustomization(output));
 			_context = _fixture.Create<TestContext>();
 		}
 
@@ -128,8 +129,8 @@ namespace MusicMirror.FunctionalTests.Tests
 			{
 				yield return new object[] { new[] { TestFilesConstants.Flac.SourceNormalFile1 } };
 				yield return new object[] { new[] { TestFilesConstants.MP3.SourceNormalFile1 } };
-				yield return new object[] { new[] { TestFilesConstants.Flac.SourceNormalFile1, TestFilesConstants.MP3.SourceNormalFile1 } };
-				yield return new object[] { new[] { TestFilesConstants.Flac.SourceNormalFile1, TestFilesConstants.MP3.SourceNormalFile1, TestFilesConstants.MP3.SourceFileWithWrongDisplayedDuration } };
+				yield return new object[] { new[] { TestFilesConstants.Flac.SourceNormalFile1, TestFilesConstants.MP3.SourceNormalFile2 } };
+				yield return new object[] { new[] { TestFilesConstants.Flac.SourceNormalFile1, TestFilesConstants.MP3.SourceNormalFile2, TestFilesConstants.MP3.SourceFileWithWrongDisplayedDuration } };
 			}
 		}
 
@@ -157,30 +158,17 @@ namespace MusicMirror.FunctionalTests.Tests
 			var observer = scheduler.CreateObserver<SynchronizedFilesCountViewModel>();
 			using (_context.ViewModel.SynchronizedFileCount.Subscribe(observer))
             {
-                Task<bool> task = WaitUntilTranscodingComplete();                
+                var task = _context.WaitUntilTranscodingComplete(TestContextUtils.CreateLongTimedOutCancellationToken());                
                 _context.ViewModel.EnableSynchronizationCommand.Execute(null);
                 await task;
-                await Task.Delay(1.Seconds());
             }
-            var actual = observer.Values();
-			//assert
-			var expected = new[] { SynchronizedFilesCountViewModel.Empty }
-							.Concat(files.Select((f, i) => new SynchronizedFilesCountViewModel(i, files.Length)))
-							.Concat(new[] { new SynchronizedFilesCountViewModel(files.Length, files.Length) });
+            var actual = observer.Values().ToArray();
+            //assert
+            var expected = new[] { SynchronizedFilesCountViewModel.Empty }
+                            .Concat(files.Select((f, i) => new SynchronizedFilesCountViewModel(i, files.Length)))
+                            .Concat(new[] { new SynchronizedFilesCountViewModel(files.Length, files.Length) });                            
 			actual.ShouldAllBeEquivalentTo(expected);
 		}
-
-        private Task<bool> WaitUntilTranscodingComplete()
-        {
-            return _context.ViewModel.IsTranscodingRunning
-                                     .Where(b => b)
-                                     .Take(1)
-                                     .Timeout(5.Seconds())
-                                     .SelectMany(_ => _context.ViewModel.IsTranscodingRunning)
-                                     .Where(b => !b)
-                                     .Take(1)
-                                     .ToTask(TestContextUtils.CreateLongTimedOutCancellationToken());
-        }
 
 		//[Fact]
 		//public async Task WhenIStartTheSynchronization_IShouldReceiveANotification()

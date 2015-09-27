@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.Unity;
+﻿using Hanno.Extensions;
+using Microsoft.Practices.Unity;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-    public class LoggingComposer
+    public class LoggingComposer : ICompositionModule
     {
         private readonly string _sessionId;
 
@@ -31,9 +32,11 @@ namespace MusicMirror
 
         public void Compose(IUnityContainer container)
         {
+            RegisterDebuggerTarget(container);
+            RegisterFileTarget(container);
             container.RegisterType<LoggingConfiguration>(
                 new ContainerControlledLifetimeManager(),
-                new InjectionFactory(c => CreateConfiguration()));
+                new InjectionFactory(c => CreateConfiguration(c)));
             container.RegisterType<LogFactory>(
                 new ContainerControlledLifetimeManager(), 
                 new InjectionFactory(c => new LogFactory(c.Resolve<LoggingConfiguration>())));
@@ -43,20 +46,29 @@ namespace MusicMirror
                 );
         }
 
+        private void RegisterFileTarget(IUnityContainer container)
+        {
+            var fileTarget = new FileTarget() { FileName = "${basedir}/Logs/" + SessionId + "/${level}.log" };
+            var rule2 = new LoggingRule("*", LogLevel.Debug, fileTarget);
+            container.RegisterInstance("File", rule2);
+        }
+
+        private void RegisterDebuggerTarget(IUnityContainer container)
+        {
+            var debuggerTarget = new DebuggerTarget();
+            var rule1 = new LoggingRule("*", LogLevel.Debug,  debuggerTarget);
+            container.RegisterInstance("Debugger", rule1);
+        }
+
         private Func<string, ILogger> CreateLoggerFactory(IUnityContainer c)
         {
             return (name) => c.Resolve<LogFactory>().GetLogger(name);
         }
 
-        private LoggingConfiguration CreateConfiguration()
+        private LoggingConfiguration CreateConfiguration(IUnityContainer container)
         {
             var config = new LoggingConfiguration();
-            var debuggerTarget = new DebuggerTarget();
-            var fileTarget = new FileTarget() { FileName = "${basedir}/Logs/" + SessionId + "/${level}.log" };
-            var rule1 = new LoggingRule("*", LogLevel.Debug,  debuggerTarget);
-            var rule2 = new LoggingRule("*", LogLevel.Debug, fileTarget);
-            config.LoggingRules.Add(rule1);
-            config.LoggingRules.Add(rule2);
+            config.LoggingRules.AddRange(container.ResolveAll<LoggingRule>());
             return config;
         }
     }

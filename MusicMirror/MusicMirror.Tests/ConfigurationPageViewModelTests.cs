@@ -168,6 +168,7 @@ namespace MusicMirror.Tests
             Fixture fixture)
         {
             //arrange            
+            const int TranscodingStoppedRelativeTime = 50;
             var fileNotificationsObservable = schedulers.CreateHotObservable(
                 fileNotifications.Select((f, i) => OnNext(Subscribed + i + 101, f))
                                  .Concat(fileNotifications.Select((f, i) => OnNext(Subscribed + i + 201, f)))
@@ -177,24 +178,22 @@ namespace MusicMirror.Tests
             var notificationsObservable = schedulers.CreateHotObservable(
                 OnNext(Subscribed + 1, false),
                 OnNext(Subscribed + 100, true),
-                OnNext(Subscribed + 199, false),
+                OnNext(Subscribed + 100 + TranscodingStoppedRelativeTime, false),
                 OnNext(Subscribed + 200, true),
-                OnNext(Subscribed + 299, false),
+                OnNext(Subscribed + 200 + TranscodingStoppedRelativeTime, false),
                 OnNext(Subscribed + 300, true),
-                OnNext(Subscribed + 399, false));
+                OnNext(Subscribed + 300 + TranscodingStoppedRelativeTime, false));
             notifications.Setup(n => n.ObserveIsTranscodingRunning()).Returns(notificationsObservable);
             notifications.Setup(n => n.ObserveNotifications()).Returns(fileNotificationsObservable);
             var sut = fixture.Create<ConfigurationPageViewModel>();
+            
             //act
             var actual = schedulers.Start(() => sut.SynchronizedFileCount);
             //assert                                    
             var expected = OnNext(Subscribed, SynchronizedFilesCountViewModel.Empty).Yield()
-                        .Concat(CreateExpectedFileNotifications(fileNotifications, 101))
-                        .Concat(OnNext(Subscribed + 199, SynchronizedFilesCountViewModel.Empty))
-                        .Concat(CreateExpectedFileNotifications(fileNotifications, 201))
-                        .Concat(OnNext(Subscribed + 299, SynchronizedFilesCountViewModel.Empty))
-                        .Concat(CreateExpectedFileNotifications(fileNotifications, 301))
-                        .Concat(OnNext(Subscribed + 399, SynchronizedFilesCountViewModel.Empty))
+                        .Concat(CreateExpectedFileNotifications(fileNotifications, 101))                        
+                        .Concat(CreateExpectedFileNotifications(fileNotifications, 201))                        
+                        .Concat(CreateExpectedFileNotifications(fileNotifications, 301))                        
                         .ToArray();
 
             actual.Messages.ShouldAllBeEquivalentTo(expected);
@@ -274,12 +273,9 @@ namespace MusicMirror.Tests
                 {
                     OnNext(Subscribed, SynchronizedFilesCountViewModel.Empty),
                 }
-                .Concat(createExpectedFileNotifications(Subscribed + 101))
-                .Concat(OnNext(Subscribed + 199, SynchronizedFilesCountViewModel.Empty))
-                .Concat(createExpectedFileNotifications(Subscribed + 201))
-                .Concat(OnNext(Subscribed + 299, SynchronizedFilesCountViewModel.Empty))
-                .Concat(createExpectedFileNotifications(Subscribed + 301))
-                .Concat(OnNext(Subscribed + 399, SynchronizedFilesCountViewModel.Empty))
+                .Concat(createExpectedFileNotifications(Subscribed + 101))                
+                .Concat(createExpectedFileNotifications(Subscribed + 201))                
+                .Concat(createExpectedFileNotifications(Subscribed + 301))                
                 .ToArray();
             actual.Messages.ShouldAllBeEquivalentTo(expected);
         }

@@ -146,14 +146,18 @@
     </ApplicationDefinition>
     <Compile Include="Composer.cs" />
     <Compile Include="ConfigurationObservable.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="EmptyNavigationService.cs" />
     <Compile Include="EmptyRequestNavigation.cs" />
     <Compile Include="FileObserverFactory.cs" />
     <Compile Include="FileWatcher.cs" />
+    <Compile Include="ICompositionModule.cs" />
     <Compile Include="LoggingComposer.cs" />
     <Compile Include="Logging\LoggingFileSynchronizerVisitorFactory.cs" />
     <Compile Include="Logging\LoggingFileTranscoder.cs" />
+    <Compile Include="Logging\LoggingFileObserverFactory.cs" />
     <Compile Include="MessageBoxMessageDialog.cs" />
+    <Compile Include="SchedulersModule.cs" />
     <Compile Include="SettingsConstants.cs" />
     <Compile Include="UnityAsyncDataTableFactory.cs" />
     <Compile Include="ViewModels\ConfigurationPageViewModel.cs" />

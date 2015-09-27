@@ -34,11 +34,11 @@ namespace MusicMirror.Logging
 			try
 			{
 				await _fileTranscoder.Transcode(ct, sourceFile, format, targetDirectory);
-				_log.Info("Transcoding complete for file", sourceFileName, targetFileName);
+				_log.Info("Transcoding complete for file {0} {1}", sourceFileName, targetFileName);
 			}
 			catch (Exception ex)
 			{
-				_log.Error(ex, "Error while logging file " + sourceFile);
+				_log.Error(ex, "Error while logging file {0}", sourceFileName);
 				throw;
 			}			
 		}

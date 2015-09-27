@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MusicMirror.FunctionalTests.Tests
 {
@@ -19,9 +20,9 @@ namespace MusicMirror.FunctionalTests.Tests
 		private readonly IFixture _fixture;
 		private readonly TestContext _context;
 
-		public TranscodeToMP3Tests()
+		public TranscodeToMP3Tests(ITestOutputHelper output)
 		{
-			_fixture = new Fixture().Customize(new SpecificationCustomization());
+			_fixture = new Fixture().Customize(new SpecificationCustomization(output));
 			_context = _fixture.Create<TestContext>();
 		}
 

@@ -23,7 +23,9 @@ namespace MusicMirror
         private readonly Subject<IFileNotification[]> _fileNotifications;
         private readonly IObservable<bool> _isTranscodingRunning;
         private readonly CompositeDisposable _subscribtions;
-        private readonly IScheduler _scheduler;
+        private IScheduler _synchronizationScheduler;
+        private readonly ReplaySubject<int> _numberOfFilesAddedInTranscodingQueue;
+        private readonly IScheduler _notificationsScheduler;
 
         public IObservable<MusicMirrorConfiguration> ConfigurationObservable
         {
@@ -49,11 +51,24 @@ namespace MusicMirror
             }
         }
 
-        public IScheduler Scheduler
+        public IScheduler SynchronizationScheduler
         {
             get
             {
-                return _scheduler;
+                return _synchronizationScheduler;
+            }
+            set
+            {
+                if (value == null) throw new ArgumentNullException(nameof(SynchronizationScheduler));
+                _synchronizationScheduler = value;
+            }
+        }
+
+        public IScheduler NotificationsScheduler
+        {
+            get
+            {
+                return _notificationsScheduler;
             }
         }
 
@@ -61,20 +76,25 @@ namespace MusicMirror
             IObservable<MusicMirrorConfiguration> configurationObservable,
             IFileObserverFactory fileObserverFactory,
             IFileSynchronizerVisitorFactory fileSynchronizerVisitorFactory,
-            IScheduler scheduler)
+            IScheduler synchronizationScheduler,
+            IScheduler notificationsScheduler)
         {
             if (configurationObservable == null) throw new ArgumentNullException(nameof(configurationObservable));
             if (fileObserverFactory == null) throw new ArgumentNullException(nameof(fileObserverFactory));
             if (fileSynchronizerVisitorFactory == null) throw new ArgumentNullException(nameof(fileSynchronizerVisitorFactory));
-            if (scheduler == null) throw new ArgumentNullException(nameof(scheduler));
+            if (synchronizationScheduler == null) throw new ArgumentNullException(nameof(synchronizationScheduler));
+            if (notificationsScheduler == null) throw new ArgumentNullException(nameof(notificationsScheduler));            
             _subscribtions = new CompositeDisposable();
             _configurationObservable = configurationObservable;
             _fileObserverFactory = fileObserverFactory;
             _fileSynchronizerVisitorFactory = fileSynchronizerVisitorFactory;
             _transcodingResultNotifications = new Subject<IFileTranscodingResultNotification>();
             _fileNotifications = new Subject<IFileNotification[]>();
-            _isTranscodingRunning = ObserveIsTranscodinningRunningCold().ReplayAndConnect(1, _subscribtions, ImmediateScheduler.Instance);
-            _scheduler = scheduler;
+            _numberOfFilesAddedInTranscodingQueue = new ReplaySubject<int>(1, ImmediateScheduler.Instance).DisposeWith(_subscribtions);
+            _numberOfFilesAddedInTranscodingQueue.OnNext(0);
+            _isTranscodingRunning = ObserveIsTranscodinningRunningCold().ReplayAndConnect(1, _subscribtions, ImmediateScheduler.Instance);            
+            _synchronizationScheduler = synchronizationScheduler;
+            _notificationsScheduler = notificationsScheduler;
         }
 
         public IDisposable Subscribe()
@@ -88,21 +108,31 @@ namespace MusicMirror
         private IObservable<Unit> ObserveFiles(MusicMirrorConfiguration configuration)
         {
             var visitor = FileSynchronizerVisitorFactory.CreateVisitor(configuration);
-            return FileObserverFactory.GetFileObserver(configuration.SourcePath)
-                                      .Do(files => _fileNotifications.OnNext(files))
+            return FileObserverFactory.GetFileObserver(configuration.SourcePath)          
+                                      .ObserveOn(_notificationsScheduler)                                                       
+                                      .Do(files =>
+                                      {                                          
+                                          _numberOfFilesAddedInTranscodingQueue.OnNext(files.Length);                                          
+                                          _fileNotifications.OnNext(files);                                          
+                                      })
                                       .SelectMany(files => files.Select(file => SynchronizeFile(file, visitor))
-                                                                 .Merge(4)
+                                                                 .Merge(4, _synchronizationScheduler)
                                                                  .ToList()
                                                                  .SelectUnit());
         }
 
         private IObservable<Unit> SynchronizeFile(IFileNotification file, IFileSynchronizerVisitor visitor)
         {
-            return Observable.FromAsync(async ct => await file.Accept(ct, visitor), _scheduler)
-                             .Do(_ => _transcodingResultNotifications.OnNext(FileTranscodingResultNotification.CreateSuccess(file)))
+            return Observable.FromAsync(async ct => await file.Accept(ct, visitor), _notificationsScheduler)                             
+                             .Do(_ =>
+                             {
+                                 _transcodingResultNotifications.OnNext(FileTranscodingResultNotification.CreateSuccess(file));
+                                 _numberOfFilesAddedInTranscodingQueue.OnNext(-1);
+                             })
                              .Catch((Exception ex) =>
                              {
                                  _transcodingResultNotifications.OnNext(FileTranscodingResultNotification.CreateFailure(file, ex));
+                                 _numberOfFilesAddedInTranscodingQueue.OnNext(-1);
                                  return Observable.Return(Unit.Default, ImmediateScheduler.Instance);
                              });
         }
@@ -129,11 +159,7 @@ namespace MusicMirror
 
         private IObservable<bool> ObserveIsTranscodinningRunningCold()
         {
-            return Observable.Merge(
-                            ObserveNotifications().Select(f => f.Length),
-                            ObserveTranscodingResult().Select(f => -1)
-                            )
-                            .StartWith(ImmediateScheduler.Instance, 0)
+            return _numberOfFilesAddedInTranscodingQueue
                             .Scan(0, (x, y) => x + y)
                             .Select(filesInQueue => filesInQueue > 0)
                             .DistinctUntilChanged();

@@ -13,6 +13,7 @@ using System.Reactive.Disposables;
 using System.Collections.ObjectModel;
 using System.Reactive.Concurrency;
 using System.Reactive;
+using NLog;
 
 namespace MusicMirror.ViewModels
 {
@@ -21,12 +22,14 @@ namespace MusicMirror.ViewModels
         private readonly ISettingsService _settingsService;
         private readonly ISynchronizationController _synchronizationController;
         private readonly ITranscodingNotifications _transcodingNotifications;
+        private readonly ILogger _logger;
 
         public ConfigurationPageViewModel(
             IViewModelServices services,
             ISettingsService settingsService,
             ISynchronizationController synchronizationController,
-            ITranscodingNotifications transcodingNotifications) : base(services)
+            ITranscodingNotifications transcodingNotifications,
+            ILogger logger) : base(services)
         {
             if (services == null)
                 throw new ArgumentNullException(nameof(services), $"{nameof(services)} is null.");
@@ -34,9 +37,11 @@ namespace MusicMirror.ViewModels
                 throw new ArgumentNullException(nameof(transcodingNotifications), $"{nameof(transcodingNotifications)} is null.");
             if (synchronizationController == null) throw new ArgumentNullException(nameof(synchronizationController));
             if (settingsService == null) throw new ArgumentNullException(nameof(settingsService));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
             _settingsService = settingsService;
             _synchronizationController = synchronizationController;
             _transcodingNotifications = transcodingNotifications;
+            _logger = logger;
         }
 
         protected override void OnInitialized()
@@ -47,7 +52,7 @@ namespace MusicMirror.ViewModels
             TargetPath = this.GetObservableProperty(() => _settingsService.ObserveValue(SettingsConstants.TargetPath, () => string.Empty), "TargetPath");
             IsSynchronizationEnabled = this.GetObservableProperty(() => _synchronizationController.ObserveSynchronizationIsEnabled(), "IsSynchronizationEnabled");
             SynchronizedFileCount = this.GetObservableProperty(ObserveSynchronizedFileCount, "GetSynchronizedFileCount");
-            IsTranscodingRunning = this.GetObservableProperty(() => _transcodingNotifications.ObserveIsTranscodingRunning().StartWith(Services.Schedulers.ThreadPool, false), "IsTranscodingRunning");
+            IsTranscodingRunning = this.GetObservableProperty(() => _transcodingNotifications.ObserveIsTranscodingRunning().StartWith(Services.Schedulers.Immediate, false), "IsTranscodingRunning");
         }
 
         public IObservableProperty<string> SourcePath { get; private set; }
@@ -90,16 +95,30 @@ namespace MusicMirror.ViewModels
         private IObservable<SynchronizedFilesCountViewModel> ObserveSynchronizedFileCount()
         {
             return _transcodingNotifications.ObserveIsTranscodingRunning()
-                                            .Where(b => b)
-                                            .Select(o => Observable.CombineLatest(
-                                                ObserveTotalFileCount(),
-                                                ObserveSuccessFileCount(),
-                                                (total, successes) => new SynchronizedFilesCountViewModel(successes, total))
-                                                .TakeUntil(_transcodingNotifications.ObserveIsTranscodingRunning().Where(b => !b)))
+                                            .Where(b => b)                                            
+                                            .Select(o =>
+                                            {
+                                                var compositeDisposable = new CompositeDisposable();
+                                                //var o1 = ObserveTotalFileCount().ReplayAndConnect(5, compositeDisposable, Services.Schedulers.Immediate);
+                                                //var o2 = ObserveSuccessFileCount().ReplayAndConnect(5, compositeDisposable, Services.Schedulers.Immediate);
+                                                var o1 = ObserveTotalFileCount();
+                                                var o2 = ObserveSuccessFileCount();
+                                                var connectableObservable = Observable.CombineLatest(
+                                                       o1,
+                                                       o2,
+                                                       (total, successes) =>
+                                                       {                                                           
+                                                           return new SynchronizedFilesCountViewModel(successes, total);
+                                                       })
+                                                       .Do(vm => _logger.Info("Received SynchronizedFileCountNotification. Sucesses : {0}, Total : {1}", vm.SynchronizedFilesCount, vm.TotalFileCount))                                                       
+                                                       .TakeUntil(_transcodingNotifications.ObserveIsTranscodingRunning().Where(b => !b))
+                                                       .Replay(5, Services.Schedulers.Immediate);
+                                                var disposable = connectableObservable.Connect();
+                                                return Observable.Using(() => disposable, _ => connectableObservable);                                               
+                                            })
                                             .Switch()
                                             .Where(vm => !vm.IsEmpty)
-                                            .Merge(ObserveEmptyFilesCount(), Services.Schedulers.ThreadPool);
-
+                                            .StartWith(Services.Schedulers.Immediate, SynchronizedFilesCountViewModel.Empty);
         }
 
         private IObservable<SynchronizedFilesCountViewModel> ObserveEmptyFilesCount()
@@ -108,15 +127,16 @@ namespace MusicMirror.ViewModels
                                             .StartWith(Services.Schedulers.Immediate, false)
                                             .DistinctUntilChanged()
                                             .Where(b => !b)
-                                            .Select(_ => SynchronizedFilesCountViewModel.Empty);
+                                            .Select(_ => SynchronizedFilesCountViewModel.Empty)
+                                            .SubscribeOn(Services.Schedulers.Immediate);
         }
 
         private IObservable<int> ObserveSuccessFileCount()
         {
-            return _transcodingNotifications.ObserveTranscodingResult()
+            return _transcodingNotifications.ObserveTranscodingResult()                                            
                                             .Where(r => r.HandleResult(() => true, _ => false))
-                                            .Scan(new IFileTranscodingResultNotification[] { }, (f1, f2) => f1.Concat(new[] { f2 }).ToArray())
-                                            .Select(result => result.Length)
+                                            .Scan(new IFileTranscodingResultNotification[] { }, (f1, f2) => f1.Concat(new[] { f2 }).ToArray())                                            
+                                            .Select(result => result.Length)                                            
                                             .StartWith(Services.Schedulers.Immediate, 0);
         }
 
@@ -125,7 +145,7 @@ namespace MusicMirror.ViewModels
             return _transcodingNotifications.ObserveNotifications()
                                             .Scan(new IFileNotification[] { }, (f1, f2) => f2.Concat(f1).ToArray())
                                             .Select(files => files.Length)
-                                            .StartWith(Services.Schedulers.Immediate, 0);                                                 
+                                            .StartWith(Services.Schedulers.Immediate, 0);
         }
 
         private async Task SaveSettings(CancellationToken ct)
