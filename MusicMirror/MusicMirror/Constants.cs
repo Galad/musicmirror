@@ -12,5 +12,10 @@ namespace MusicMirror
         {
             public const string NotificationsScheduler = "NotificationsScheduler";
         }
+
+        public static class Logging
+        {
+            public const string DefaultLayout = "[${longdate}] [${level:uppercase=true}] | [${logger}] | ${message} ${exception:format=tostring}";
+        }
     }
 }

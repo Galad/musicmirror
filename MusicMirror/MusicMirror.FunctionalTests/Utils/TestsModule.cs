@@ -3,6 +3,7 @@ using Microsoft.Practices.Unity;
 using Xunit.Abstractions;
 using NLog.Targets;
 using NLog;
+using NLog.Layouts;
 
 namespace MusicMirror.FunctionalTests.Utils
 {
@@ -17,8 +18,9 @@ namespace MusicMirror.FunctionalTests.Utils
 
         public void Compose(IUnityContainer container)
         {            
-            var testOuputTarget = new TestOutputHelperTarget(_output);
-            var rule = new NLog.Config.LoggingRule("*", LogLevel.Debug, testOuputTarget);
+            var testOutputTarget = new TestOutputHelperTarget(_output);
+            testOutputTarget.Layout = Layout.FromString(Constants.Logging.DefaultLayout);
+            var rule = new NLog.Config.LoggingRule("*", LogLevel.Debug, testOutputTarget);                        
             container.RegisterInstance("TestOutputHelper", rule);
         }
 

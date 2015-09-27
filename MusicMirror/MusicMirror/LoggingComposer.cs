@@ -2,6 +2,7 @@
 using Microsoft.Practices.Unity;
 using NLog;
 using NLog.Config;
+using NLog.Layouts;
 using NLog.Targets;
 using System;
 using System.Collections.Generic;
@@ -11,13 +12,13 @@ using System.Threading.Tasks;
 
 namespace MusicMirror
 {
-    public class LoggingComposer : ICompositionModule
+    public class LoggingModule : ICompositionModule
     {
         private readonly string _sessionId;
 
-        public LoggingComposer() : this(Guid.NewGuid().ToString()) { }
+        public LoggingModule() : this(Guid.NewGuid().ToString()) { }
 
-        public LoggingComposer(string sessionId)
+        public LoggingModule(string sessionId)
         {
             _sessionId = sessionId;
         }
@@ -38,7 +39,7 @@ namespace MusicMirror
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(c => CreateConfiguration(c)));
             container.RegisterType<LogFactory>(
-                new ContainerControlledLifetimeManager(), 
+                new ContainerControlledLifetimeManager(),
                 new InjectionFactory(c => new LogFactory(c.Resolve<LoggingConfiguration>())));
             container.RegisterType<Func<string, ILogger>>(
                 new ContainerControlledLifetimeManager(),
@@ -48,15 +49,22 @@ namespace MusicMirror
 
         private void RegisterFileTarget(IUnityContainer container)
         {
-            var fileTarget = new FileTarget() { FileName = "${basedir}/Logs/" + SessionId + "/${level}.log" };
+            var fileTarget = new FileTarget()
+            {
+                FileName = "${basedir}/Logs/" + SessionId + "/${level}.log",
+                Layout = Layout.FromString(Constants.Logging.DefaultLayout)
+            };
             var rule2 = new LoggingRule("*", LogLevel.Debug, fileTarget);
             container.RegisterInstance("File", rule2);
         }
 
         private void RegisterDebuggerTarget(IUnityContainer container)
         {
-            var debuggerTarget = new DebuggerTarget();
-            var rule1 = new LoggingRule("*", LogLevel.Debug,  debuggerTarget);
+            var debuggerTarget = new DebuggerTarget()
+            {
+                Layout = Layout.FromString(Constants.Logging.DefaultLayout)
+            };
+            var rule1 = new LoggingRule("*", LogLevel.Debug, debuggerTarget);
             container.RegisterInstance("Debugger", rule1);
         }
 

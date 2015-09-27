@@ -21,12 +21,14 @@ namespace MusicMirror.FunctionalTests.Utils
 {
     public sealed class TestComposer : Composer
 	{
-		public TestComposer(string loggingSessionId, ITestOutputHelper output) : base(
+		public TestComposer(string sessionId, ITestOutputHelper output) : base(
                   new CompositeCompositionModule(
-                      new LoggingComposer(loggingSessionId),
+                      new LoggingModule(sessionId),
                       new TestsModule(output),
                       new TestSchedulersModule()))
-		{ }
+		{
+            SettingsFileName = "Settings" + sessionId;
+        }
 	}
 
 	#region Customization
@@ -47,6 +49,7 @@ namespace MusicMirror.FunctionalTests.Utils
 			fixture.Register(() =>
 			{
                 var sessionId = Guid.NewGuid().ToString();
+                _output.WriteLine($"Session is {sessionId}");
                 var uniqueTestFolder = Path.Combine(Environment.CurrentDirectory, TestFileRootFolder, sessionId);
 				var testFilesFolder = Path.Combine(Environment.CurrentDirectory, ReferenceTestFileRootFolder);
                 Debug.WriteLine($"DebugTestFolder is {uniqueTestFolder}");

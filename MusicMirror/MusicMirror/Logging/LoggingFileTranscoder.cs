@@ -38,7 +38,7 @@ namespace MusicMirror.Logging
 			}
 			catch (Exception ex)
 			{
-				_log.Error(ex, "Error while logging file {0}", sourceFileName);
+				_log.Error(ex, "Error while transcoding file {0} to {1}", sourceFileName, targetFileName);
 				throw;
 			}			
 		}

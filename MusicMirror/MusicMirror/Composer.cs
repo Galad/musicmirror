@@ -35,7 +35,7 @@ namespace MusicMirror
     {
         public AppComposer() : base(
             new CompositeCompositionModule(
-                new LoggingComposer(),
+                new LoggingModule(),
                 new SchedulersModule()))
         {
         }
@@ -43,13 +43,28 @@ namespace MusicMirror
 
     public abstract class Composer : IDisposable
     {
-        private readonly UnityContainer _container;        
+        private readonly UnityContainer _container;
         private readonly ICompositionModule _extraModule;
+        private bool disposed = false;
+        private string _settingsFileName = "Settings";
 
         protected Composer(ICompositionModule extraModule)
         {
             _extraModule = Guard.ForNull(extraModule, nameof(extraModule));
-            _container = new UnityContainer();            
+            _container = new UnityContainer();
+        }
+
+        public string SettingsFileName
+        {
+            get
+            {
+                return _settingsFileName;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(SettingsFileName));
+                _settingsFileName = value;
+            }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
@@ -57,7 +72,7 @@ namespace MusicMirror
         public ConfigurationPageViewModel Compose()
         {
             MediaFoundationApiStarter.Start();
-            _extraModule.Compose(_container);            
+            _extraModule.Compose(_container);
             var cqrs = new AsyncCommandQueryBus(
                 new UnityCommandQueryHandlerFactory(_container),
                 new UnityCommandQueryHandlerFactory(_container));
@@ -71,7 +86,7 @@ namespace MusicMirror
                     new InjectionParameter(new SafeStringDeserializer(serializer)),
                     new InjectionParameter(new AsyncOperations(new FileOperations())),
                     new InjectionParameter(new AsyncDirectoryOperations(new DirectoryOperations())),
-                    new InjectionParameter(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings")),
+                    new InjectionParameter(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, _settingsFileName)),
                     new InjectionParameter(typeof(string), default(string))));
             _container.RegisterType<ISettingsService>(
                 new ContainerControlledLifetimeManager(),
@@ -94,7 +109,7 @@ namespace MusicMirror
                         new FileSynchronizerVisitorFactory(CreateTranscoder(c)),
                         //new EmptyFileSynchronizerVisitorFactory(),
                         c.Resolve<Func<string, ILogger>>()("IFileSynchronizerVisitor")
-                        ), 
+                        ),
                     c.Resolve<ISchedulers>().ThreadPool,
                     c.Resolve<IScheduler>(Constants.Schedulers.NotificationsScheduler))));
 
@@ -204,8 +219,7 @@ namespace MusicMirror
             return new LoggingFileTranscoder(transcoder, container.Resolve<Func<string, ILogger>>()("IFileTranscoder"));
         }
 
-        #region IDisposable
-        bool disposed = false;
+        #region IDisposable       
 
         public void Dispose()
         {
