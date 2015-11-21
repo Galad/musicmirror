@@ -58,14 +58,14 @@ namespace MusicMirror.Tests
 
         [Theory, FileAutoData]
         public void Start_WhenFileNotificationIsYield_ShouldCallSynchronize(
-                   [Frozen]TestScheduler scheduler,
-                   [Frozen(As = typeof(IObservable<MusicMirrorConfiguration>))]TestObservableWrapper<MusicMirrorConfiguration> configurationObservable,
-                   [Frozen]Mock<IFileObserverFactory> fileObserverFactory,
-                   [Frozen]Mock<IFileSynchronizerVisitorFactory> fileSynchronizerFactory,
-                   SynchronizeFilesWhenFileChanged sut,
-                   MusicMirrorConfiguration configuration,
-                   IFileNotification[][] fileNotification,
-                   Mock<IFileSynchronizerVisitor> fileSynchronizerVisitor)
+            [Frozen] TestScheduler scheduler,
+            [Frozen(As = typeof (IObservable<MusicMirrorConfiguration>))] TestObservableWrapper<MusicMirrorConfiguration> configurationObservable,
+            [Frozen] Mock<IFileObserverFactory> fileObserverFactory,
+            [Frozen] Mock<IFileSynchronizerVisitorFactory> fileSynchronizerFactory,
+            SynchronizeFilesWhenFileChanged sut,
+            MusicMirrorConfiguration configuration,
+            IFileNotification[][] fileNotification,
+            Mock<IFileSynchronizerVisitor> fileSynchronizerVisitor)
         {
             //arrange
             configurationObservable.SetObservable(scheduler.CreateHotObservable(OnNext(Subscribed + 1, configuration)));
@@ -73,7 +73,7 @@ namespace MusicMirror.Tests
             var fileObserver = scheduler.CreateHotObservable(
                 fileNotification.Select((f, i) => OnNext(NotificationsStart + i, f)).ToArray());
             fileObserverFactory.Setup(f => f.GetFileObserver(configuration.SourcePath)).Returns(fileObserver);
-            fileSynchronizerFactory.Setup(f => f.CreateVisitor(configuration)).Returns(fileSynchronizerVisitor.Object);          
+            fileSynchronizerFactory.Setup(f => f.CreateVisitor(configuration)).Returns(fileSynchronizerVisitor.Object);
             //act            
             sut.Start();
             scheduler.Start();
@@ -250,8 +250,37 @@ namespace MusicMirror.Tests
             //act            
             var actual = scheduler.Start(() => sut.ObserveIsTranscodingRunning(), Created, Subscription, Disposed);
             //assert
-            var expected = new[] { true, false };
-            //+1 because we expect that the tasks results of file.Accept will be scheduled on the TestScheduler            
+            var expected = new[] { true, false };                   
+            actual.Values().ShouldAllBeEquivalentTo(expected);
+        }
+
+
+        [Theory, FileAutoData]
+        public void ObserveIsTranscodingRunning_WhenFilesAreTranscodingAndStartIsDisposed_ShouldReturnCorrectValue(
+           [Frozen]TestScheduler scheduler,
+           [Frozen(As = typeof(IObservable<MusicMirrorConfiguration>))]TestObservableWrapper<MusicMirrorConfiguration> configurationObservable,                
+           [Frozen]Mock<IFileObserverFactory> fileObserverFactory,
+           SynchronizeFilesWhenFileChanged sut,
+           MusicMirrorConfiguration configuration,
+           IFileNotification[] fileNotification
+           )
+        {
+            sut.SynchronizationScheduler = ImmediateScheduler.Instance;
+            const long NotificationsStart = Subscribed + 2;
+            const long DisposeStart = Subscribed + 6;
+            configurationObservable.SetObservable(scheduler.CreateHotObservable(OnNext(NotificationsStart, configuration)));            
+            var fileObserver = scheduler.CreateHotObservable(OnNext(NotificationsStart, fileNotification));
+            fileObserverFactory.Setup(f => f.GetFileObserver(configuration.SourcePath)).Returns(fileObserver);
+            SetupTranscodingWorkWithInfiniteDuration(scheduler, fileNotification);           
+            scheduler.Schedule(201.Ticks(), () =>
+            {
+                var disposable = sut.Start();
+                scheduler.ScheduleAbsolute(DisposeStart, () => disposable.Dispose());
+            });
+            //act            
+            var actual = scheduler.Start(sut.ObserveIsTranscodingRunning, Created, Subscribed, Subscribed + 20);
+            //assert
+            var expected = new[] { false, true, false };                        
             actual.Values().ShouldAllBeEquivalentTo(expected);
         }
 
@@ -262,13 +291,24 @@ namespace MusicMirror.Tests
             {
                 i++;
                 var j = i;
-                Mock.Get(f).Setup(ff => ff.Accept(It.IsAny<CancellationToken>(), It.IsAny<IFileSynchronizerVisitor>()))
-                           .Returns(() =>
-                           {
-                               var completionSource = new TaskCompletionSource<bool>();
-                               scheduler.ScheduleAbsolute(scheduler.Now.AddTicks(j).Ticks, () => completionSource.SetResult(true));
-                               return completionSource.Task;
-                           });
+                Mock.Get(f)
+                    .Setup(ff => ff.Accept(It.IsAny<CancellationToken>(), It.IsAny<IFileSynchronizerVisitor>()))
+                    .Returns(() =>
+                    {
+                        var completionSource = new TaskCompletionSource<bool>();
+                        scheduler.ScheduleAbsolute(scheduler.Now.AddTicks(j).Ticks, () => completionSource.SetResult(true));
+                        return completionSource.Task;
+                    });
+            }
+        }
+
+        private static void SetupTranscodingWorkWithInfiniteDuration(TestScheduler scheduler, IFileNotification[] fileNotification)
+        {
+            foreach (var f in fileNotification)
+            {
+                Mock.Get(f)
+                    .Setup(ff => ff.Accept(It.IsAny<CancellationToken>(), It.IsAny<IFileSynchronizerVisitor>()))
+                    .Returns(new TaskCompletionSource<bool>().Task);
             }
         }
         #endregion

@@ -202,8 +202,8 @@ namespace MusicMirror
             transcoder.AddTranscoder(
                 new CopyId3TagsPostProcessor(
                 new NAudioFileTranscoder(
-                    new FlacStreamReader(),
-                    //new FlacStreamReaderInternalNAudioFlac(),
+                    //new FlacStreamReader(),
+                    new FlacStreamReaderInternalNAudioFlac(),
                     new WaveToMP3Transcoder(),
                     //new RawWaveTranscoder(),
                     //new WaveToMP3MediaFoundationTranscoder(),

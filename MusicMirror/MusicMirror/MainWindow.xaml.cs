@@ -36,8 +36,6 @@ namespace MusicMirror
 			InitializeComponent();
 			var composer = new AppComposer();
             var viewModel = composer.Compose();
-			composer.Resolve<IObservable<Unit>>("SynchronizeFilesWhenFileChanged")
-					.Subscribe(_ => { }, e => e.DebugWriteline(), () => Debug.WriteLine("SynchronizeFilesWhenFileChanged complete"));
 			DataContext = viewModel;
 			viewModel.Load(CancellationToken.None);
 		}		

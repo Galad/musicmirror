@@ -1,20 +1,14 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Hanno.Services;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
-using System.Diagnostics;
 
 namespace MusicMirror
 {
-    public sealed class SynchronizeFilesWhenFileChanged : IStartSynchronizing, ITranscodingNotifications
+    public sealed class SynchronizeFilesWhenFileChanged : IStartSynchronizing, ITranscodingNotifications, IDisposable
     {
         private readonly IObservable<MusicMirrorConfiguration> _configurationObservable;
         private readonly IFileObserverFactory _fileObserverFactory;
@@ -24,32 +18,13 @@ namespace MusicMirror
         private readonly IObservable<bool> _isTranscodingRunning;
         private readonly CompositeDisposable _subscribtions;
         private IScheduler _synchronizationScheduler;
-        private readonly ReplaySubject<int> _numberOfFilesAddedInTranscodingQueue;
+        private readonly Subject<int> _numberOfFilesAddedInTranscodingQueue;
         private readonly IScheduler _notificationsScheduler;
+        private readonly Subject<Unit> _restartListeningToNotifications;
 
-        public IObservable<MusicMirrorConfiguration> ConfigurationObservable
-        {
-            get
-            {
-                return _configurationObservable;
-            }
-        }
-
-        public IFileObserverFactory FileObserverFactory
-        {
-            get
-            {
-                return _fileObserverFactory;
-            }
-        }
-
-        public IFileSynchronizerVisitorFactory FileSynchronizerVisitorFactory
-        {
-            get
-            {
-                return _fileSynchronizerVisitorFactory;
-            }
-        }
+        public IObservable<MusicMirrorConfiguration> ConfigurationObservable => _configurationObservable;
+        public IFileObserverFactory FileObserverFactory => _fileObserverFactory;
+        public IFileSynchronizerVisitorFactory FileSynchronizerVisitorFactory => _fileSynchronizerVisitorFactory;
 
         public IScheduler SynchronizationScheduler
         {
@@ -64,13 +39,7 @@ namespace MusicMirror
             }
         }
 
-        public IScheduler NotificationsScheduler
-        {
-            get
-            {
-                return _notificationsScheduler;
-            }
-        }
+        public IScheduler NotificationsScheduler => _notificationsScheduler;
 
         public SynchronizeFilesWhenFileChanged(
             IObservable<MusicMirrorConfiguration> configurationObservable,
@@ -90,9 +59,12 @@ namespace MusicMirror
             _fileSynchronizerVisitorFactory = fileSynchronizerVisitorFactory;
             _transcodingResultNotifications = new Subject<IFileTranscodingResultNotification>();
             _fileNotifications = new Subject<IFileNotification[]>();
-            _numberOfFilesAddedInTranscodingQueue = new ReplaySubject<int>(1, ImmediateScheduler.Instance).DisposeWith(_subscribtions);
+            _restartListeningToNotifications = new Subject<Unit>();
+            //_numberOfFilesAddedInTranscodingQueue = new ReplaySubject<int>(1, ImmediateScheduler.Instance).DisposeWith(_subscribtions);
+            //_numberOfFilesAddedInTranscodingQueue.OnNext(0);
+            _numberOfFilesAddedInTranscodingQueue = new Subject<int>();
+            _isTranscodingRunning = ObserveIsTranscodinningRunningCold().ReplayAndConnect(1, _subscribtions, ImmediateScheduler.Instance);
             _numberOfFilesAddedInTranscodingQueue.OnNext(0);
-            _isTranscodingRunning = ObserveIsTranscodinningRunningCold().ReplayAndConnect(1, _subscribtions, ImmediateScheduler.Instance);            
             _synchronizationScheduler = synchronizationScheduler;
             _notificationsScheduler = notificationsScheduler;
         }
@@ -100,25 +72,25 @@ namespace MusicMirror
         public IDisposable Subscribe()
         {
             return ConfigurationObservable
-                .Select(ObserveFiles)
-                .Switch()
-                .Subscribe();
+                       .Select(ObserveFiles)
+                       .Switch()
+                       .Subscribe();
         }
 
         private IObservable<Unit> ObserveFiles(MusicMirrorConfiguration configuration)
         {
             var visitor = FileSynchronizerVisitorFactory.CreateVisitor(configuration);
-            return FileObserverFactory.GetFileObserver(configuration.SourcePath)          
-                                      .ObserveOn(_notificationsScheduler)                                                       
+            return FileObserverFactory.GetFileObserver(configuration.SourcePath)
+                                      .ObserveOn(_notificationsScheduler)
                                       .Do(files =>
-                                      {                                          
-                                          _numberOfFilesAddedInTranscodingQueue.OnNext(files.Length);                                          
-                                          _fileNotifications.OnNext(files);                                          
+                                      {
+                                          _numberOfFilesAddedInTranscodingQueue.OnNext(files.Length);
+                                          _fileNotifications.OnNext(files);
                                       })
                                       .SelectMany(files => files.Select(file => SynchronizeFile(file, visitor))
-                                                                 .Merge(4, _synchronizationScheduler)
-                                                                 .ToList()
-                                                                 .SelectUnit());
+                                                                .Merge(4, _synchronizationScheduler)
+                                                                .ToList()
+                                                                .SelectUnit());
         }
 
         private IObservable<Unit> SynchronizeFile(IFileNotification file, IFileSynchronizerVisitor visitor)
@@ -149,7 +121,14 @@ namespace MusicMirror
 
         public IDisposable Start()
         {
-            return Subscribe();
+            return new CompositeDisposable(
+                Subscribe(),
+                Disposable.Create(() =>
+                {
+                    _restartListeningToNotifications.OnNext(Unit.Default);
+                    _numberOfFilesAddedInTranscodingQueue.OnNext(0);
+                })
+                );
         }
 
         public IObservable<bool> ObserveIsTranscodingRunning()
@@ -159,10 +138,48 @@ namespace MusicMirror
 
         private IObservable<bool> ObserveIsTranscodinningRunningCold()
         {
-            return _numberOfFilesAddedInTranscodingQueue
-                            .Scan(0, (x, y) => x + y)
-                            .Select(filesInQueue => filesInQueue > 0)
-                            .DistinctUntilChanged();
+            return _restartListeningToNotifications
+                .StartWith(ImmediateScheduler.Instance, Unit.Default)
+                .Select(_ => _numberOfFilesAddedInTranscodingQueue.Scan(0, (x, y) => x + y))
+                .Switch()
+                .Select(filesInQueue => filesInQueue > 0)
+                .DistinctUntilChanged();
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // Pour détecter les appels redondants
+
+        void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: supprimer l'état managé (objets managés).
+                    _subscribtions.Dispose();
+                }
+
+                // TODO: libérer les ressources non managées (objets non managés) et remplacer un finaliseur ci-dessous.
+                // TODO: définir les champs de grande taille avec la valeur Null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: remplacer un finaliseur seulement si la fonction Dispose(bool disposing) ci-dessus a du code pour libérer les ressources non managées.
+        // ~SynchronizeFilesWhenFileChanged() {
+        //   // Ne modifiez pas ce code. Placez le code de nettoyage dans Dispose(bool disposing) ci-dessus.
+        //   Dispose(false);
+        // }
+
+        // Ce code est ajouté pour implémenter correctement le modèle supprimable.
+        public void Dispose()
+        {
+            // Ne modifiez pas ce code. Placez le code de nettoyage dans Dispose(bool disposing) ci-dessus.
+            Dispose(true);
+            // TODO: supprimer les marques de commentaire pour la ligne suivante si le finaliseur est remplacé ci-dessus.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

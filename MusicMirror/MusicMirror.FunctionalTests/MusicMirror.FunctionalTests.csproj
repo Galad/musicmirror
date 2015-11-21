@@ -190,10 +190,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestFiles\FLAC\NormalFile1.flac">
+    <None Include="TestFiles\FLAC\NormalFile1-flac.flac">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestFiles\MP3\NormalFile1.mp3">
+    <None Include="TestFiles\MP3\NormalFile1-mp3.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -201,17 +201,17 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestFiles\MP3\FileWithWrongDisplayedDuration.mp3">
+    <None Include="TestFiles\MP3\FileWithWrongDisplayedDuration-mp3.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestFiles\MP3\FileWithWrongDisplayedDurationFixed.mp3">
+    <None Include="TestFiles\MP3\FileWithWrongDisplayedDurationFixed-mp3.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestFiles\MP3\NormalFile2.mp3">
+    <None Include="TestFiles\MP3\NormalFile2-mp3.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

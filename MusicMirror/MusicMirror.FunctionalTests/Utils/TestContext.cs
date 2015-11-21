@@ -124,6 +124,15 @@ namespace MusicMirror.FunctionalTests.Utils
                              .ToTask(ct);
         }
 
+        public Task WaitUnitFirstFileIsFound(CancellationToken ct)
+        {
+            var controller = _composer.Resolve<ITranscodingNotifications>();
+            return controller.ObserveNotifications()
+                             .Take(1)
+                             .ObserveOn(ThreadPoolScheduler.Instance)
+                             .ToTask(ct);
+        }
+
         public ISynchronizationController SynchronizationController { get { return _composer.Resolve<ISynchronizationController>(); } }
         public ITranscodingNotifications SynchronizationNotifications { get { return _composer.Resolve<ITranscodingNotifications>(); } }
 

@@ -99,8 +99,6 @@ namespace MusicMirror.ViewModels
                                             .Select(o =>
                                             {
                                                 var compositeDisposable = new CompositeDisposable();
-                                                //var o1 = ObserveTotalFileCount().ReplayAndConnect(5, compositeDisposable, Services.Schedulers.Immediate);
-                                                //var o2 = ObserveSuccessFileCount().ReplayAndConnect(5, compositeDisposable, Services.Schedulers.Immediate);
                                                 var o1 = ObserveTotalFileCount();
                                                 var o2 = ObserveSuccessFileCount();
                                                 var connectableObservable = Observable.CombineLatest(
