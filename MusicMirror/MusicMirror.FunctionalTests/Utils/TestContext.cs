@@ -180,9 +180,9 @@ namespace MusicMirror.FunctionalTests.Utils
         public static class MP3
         {
             public const string Folder = "MP3";
-            public const string NormalFile1 = "NormalFile1.mp3";
-            public const string NormalFile2 = "NormalFile2.mp3";
-            public const string FileWithWrongDisplayedDuration = "FileWithWrongDisplayedDuration.mp3";
+            public const string NormalFile1 = "NormalFile1-mp3.mp3";
+            public const string NormalFile2 = "NormalFile2-mp3.mp3";
+            public const string FileWithWrongDisplayedDuration = "FileWithWrongDisplayedDuration-mp3.mp3";
             public const string SourceNormalFile1 = Folder + "\\" + NormalFile1;
             public const string SourceNormalFile2 = Folder + "\\" + NormalFile2;
             public const string SourceFileWithWrongDisplayedDuration = Folder + "\\" + FileWithWrongDisplayedDuration;
@@ -191,7 +191,7 @@ namespace MusicMirror.FunctionalTests.Utils
         public static class Flac
         {
             public const string Folder = "FLAC";
-            public const string NormalFile1 = "NormalFile1.flac";
+            public const string NormalFile1 = "NormalFile1-flac.flac";
             public const string SourceNormalFile1 = Folder + "\\" + NormalFile1;
         }
     }

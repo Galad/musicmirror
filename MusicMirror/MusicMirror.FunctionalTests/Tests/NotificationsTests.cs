@@ -8,6 +8,7 @@ using Ploeh.AutoFixture;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -179,12 +180,16 @@ namespace MusicMirror.FunctionalTests.Tests
                     .WithFile(TestFilesConstants.Flac.SourceNormalFile1)
                     .WithFile(TestFilesConstants.MP3.SourceNormalFile1);
             var scheduler = new TestScheduler();
-            var observer = scheduler.CreateObserver<SynchronizedFilesCountViewModel>();
             var task = _context.WaitUnitFirstFileIsFound(TestContextUtils.CreateShortTimedOutCancellationToken());
             _context.ViewModel.EnableSynchronizationCommand.Execute(null);
             await task;
             _context.ViewModel.DisableSynchronizationCommand.Execute(null);
-            using (_context.ViewModel.SynchronizedFileCount.Subscribe(observer))
+            var observer = scheduler.CreateObserver<SynchronizedFilesCountViewModel>();
+
+            //using (_context.ViewModel.SynchronizedFileCount.Subscribe(observer))
+            using (_context.ViewModel.SynchronizedFileCount.Subscribe(
+            Observer.Create<SynchronizedFilesCountViewModel>(t => observer.OnNext(t), e => observer.OnError(e), () => observer.OnCompleted())
+                ))
             {
                 var task2 = _context.WaitUntilTranscodingComplete(TestContextUtils.CreateLongTimedOutCancellationToken());
                 _context.ViewModel.EnableSynchronizationCommand.Execute(null);

@@ -116,7 +116,9 @@ namespace MusicMirror.ViewModels
                                             })
                                             .Switch()
                                             .Where(vm => !vm.IsEmpty)
-                                            .StartWith(Services.Schedulers.Immediate, SynchronizedFilesCountViewModel.Empty);
+                                            .DistinctUntilChanged(SynchronizedFilesCountViewModel.StructuralEqualityComparer)
+                                            .StartWith(Services.Schedulers.Immediate, SynchronizedFilesCountViewModel.Empty)
+                                            .Do(vm => _logger.Info("****Received SynchronizedFileCountNotification. Sucesses : {0}, Total : {1}", vm.SynchronizedFilesCount, vm.TotalFileCount));
         }
 
         private IObservable<SynchronizedFilesCountViewModel> ObserveEmptyFilesCount()

@@ -34,5 +34,48 @@ namespace MusicMirror.ViewModels
                 return _empty;
             }
         }
+
+        public override string ToString()
+        {
+            return $"Synchronized : {SynchronizedFilesCount}, Total : {TotalFileCount}";
+        }
+
+        public static IEqualityComparer<SynchronizedFilesCountViewModel> StructuralEqualityComparer
+        {
+            get
+            {
+                return new EqualityComparer();
+            }
+        }
+
+        private class EqualityComparer : IEqualityComparer<SynchronizedFilesCountViewModel>
+        {
+            public bool Equals(SynchronizedFilesCountViewModel x, SynchronizedFilesCountViewModel y)
+            {
+                if(x == null && y == null)
+                {
+                    return false;
+                }
+                if(x == null || y == null)
+                {
+                    return true;
+                }
+                if(ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+                return x.SynchronizedFilesCount.Equals(y.SynchronizedFilesCount) &&
+                       x.TotalFileCount.Equals(y.TotalFileCount);
+            }
+
+            public int GetHashCode(SynchronizedFilesCountViewModel obj)
+            {
+                if(obj == null)
+                {
+                    throw new ArgumentNullException("obj");
+                }
+                return obj.SynchronizedFilesCount ^ obj.TotalFileCount;
+            }
+        }
     }
 }

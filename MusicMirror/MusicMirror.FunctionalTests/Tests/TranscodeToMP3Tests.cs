@@ -42,12 +42,13 @@ namespace MusicMirror.FunctionalTests.Tests
         }
 
         [Theory,
-			InlineData(TestFilesConstants.MP3.SourceNormalFile1, TestFilesConstants.MP3.NormalFile1),
-			InlineData(TestFilesConstants.Flac.SourceNormalFile1, TestFilesConstants.MP3.NormalFile1)
+			InlineData(TestFilesConstants.MP3.SourceNormalFile1),
+			InlineData(TestFilesConstants.Flac.SourceNormalFile1)
 		]
-		public async Task WhenITranscodeAFile_ThenTheTranscodedFileShouldBeCreatedInTheTargetFolder(string file, string expectedFileName)
+		public async Task WhenITranscodeAFile_ThenTheTranscodedFileShouldBeCreatedInTheTargetFolder(string file)
 		{
-			//arrange
+            //arrange
+            var expectedFileName = Path.GetFileNameWithoutExtension(file) + ".mp3";
 			_context.SourceDirectorySetup()
 					.WithFile(file);
 
@@ -58,13 +59,14 @@ namespace MusicMirror.FunctionalTests.Tests
 		}
 
 		[Theory,
-			InlineData(TestFilesConstants.MP3.SourceNormalFile1, TestFilesConstants.MP3.NormalFile1),
-			InlineData(TestFilesConstants.Flac.SourceNormalFile1, TestFilesConstants.MP3.NormalFile1)
+			InlineData(TestFilesConstants.MP3.SourceNormalFile1),
+			InlineData(TestFilesConstants.Flac.SourceNormalFile1)
 		]
-		public async Task WhenITranscodeAFile_ThenTheTranscodedFileShouldHaveTheCorrectDuration(string file, string expectedFileName)
+		public async Task WhenITranscodeAFile_ThenTheTranscodedFileShouldHaveTheCorrectDuration(string file)
 		{
-			//arrange
-			_context.SourceDirectorySetup()
+            //arrange
+            var expectedFileName = Path.GetFileNameWithoutExtension(file) + ".mp3";
+            _context.SourceDirectorySetup()
 					.WithFile(file);
 
 			//act
@@ -74,12 +76,13 @@ namespace MusicMirror.FunctionalTests.Tests
 		}
 
 		[Theory,			
-			InlineData(TestFilesConstants.Flac.SourceNormalFile1, TestFilesConstants.MP3.NormalFile1)
+			InlineData(TestFilesConstants.Flac.SourceNormalFile1)
 		]
-		public async Task GivenIReadTheFileWithMediaFoundation_WhenITranscodeAFile_ThenTheTranscodedFileShouldHaveTheCorrectDuration(string file, string expectedFileName)
+		public async Task GivenIReadTheFileWithMediaFoundation_WhenITranscodeAFile_ThenTheTranscodedFileShouldHaveTheCorrectDuration(string file)
 		{
-			//arrange
-			_context.SourceDirectorySetup()
+            //arrange
+            var expectedFileName = Path.GetFileNameWithoutExtension(file) + ".mp3";
+            _context.SourceDirectorySetup()
 					.WithFile(file);
 
 			//act
