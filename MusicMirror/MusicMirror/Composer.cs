@@ -69,7 +69,7 @@ namespace MusicMirror
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Composition root")]
-        public ConfigurationPageViewModel Compose()
+        public MainPageViewModel Compose()
         {
             MediaFoundationApiStarter.Start();
             _extraModule.Compose(_container);
@@ -124,11 +124,10 @@ namespace MusicMirror
                     _container.Resolve<ITranscodingNotifications>())
                 ));
 
-            _container.RegisterType<ConfigurationPageViewModel>(
+            _container.RegisterType<IViewModelServices>(
+                new ContainerControlledLifetimeManager(),
                 new InjectionFactory(c =>
-                {
-                    var viewModel = new ConfigurationPageViewModel(
-                        new ViewModelServices(
+                    new ViewModelServices(
                             new NoRuleProvider(),
                             new DefaultObservableRegistrationService(
                                 new MessageBoxAsyncMessageDialog(),
@@ -141,18 +140,32 @@ namespace MusicMirror
                             cqrs,
                             new CommandEvents(),
                             new NotifyCommandStateBus(cqrs, c.Resolve<ISchedulers>().ThreadPool),
-                            new NotifyQueryStateBus(cqrs)),
-                            c.Resolve<ISettingsService>(),
-                            _container.Resolve<ISynchronizationController>(),
-                            _container.Resolve<ITranscodingNotifications>(),
-                            c.Resolve<Func<string, ILogger>>()("ConfigurationPageViewModel")
+                            new NotifyQueryStateBus(cqrs)))
+                );
+            _container.RegisterType<ConfigurationViewModel>(
+                new InjectionFactory(c =>
+                {
+                    var viewModel = new ConfigurationViewModel(
+                            c.Resolve<IViewModelServices>(),
+                            c.Resolve<ISettingsService>()
                         );
                     viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
                     return viewModel;
                 }));
+            _container.RegisterType<SynchronizationStatusViewModel>(
+                new InjectionFactory(c =>
+                        new SynchronizationStatusViewModel(
+                            c.Resolve<IViewModelServices>(),
+                            c.Resolve<ISynchronizationController>(),
+                            c.Resolve<ITranscodingNotifications>(),
+                            c.Resolve<Func<string, ILogger>>()("ConfigurationPageViewModel")
+                        )
+                    )
+                );
+            _container.RegisterType<MainPageViewModel>();
 
             ObserveAndLog();
-            return _container.Resolve<ConfigurationPageViewModel>();
+            return _container.Resolve<MainPageViewModel>();
         }
 
         private void ObserveAndLog()

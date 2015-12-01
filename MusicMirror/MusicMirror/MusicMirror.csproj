@@ -167,7 +167,9 @@
     <Compile Include="SchedulersModule.cs" />
     <Compile Include="SettingsConstants.cs" />
     <Compile Include="UnityAsyncDataTableFactory.cs" />
-    <Compile Include="ViewModels\ConfigurationPageViewModel.cs" />
+    <Compile Include="ViewModels\ConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\MainPageViewModel.cs" />
+    <Compile Include="ViewModels\SynchronizationStatusViewModel.cs" />
     <Compile Include="ViewModels\SynchronizedFilesCount.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

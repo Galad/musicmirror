@@ -25,7 +25,7 @@ namespace MusicMirror.Tests.Customizations
     {
         public void Customize(IFixture fixture)
         {
-            fixture.Customize<ConfigurationPageViewModel>(c => c.Do(vm =>
+            fixture.Customize<ConfigurationViewModel>(c => c.Do(vm =>
             {
                 vm.Initialize(fixture.Create<INavigationRequest>());
             }));

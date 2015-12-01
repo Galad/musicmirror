@@ -36,6 +36,7 @@ namespace MusicMirror
 			InitializeComponent();
 			var composer = new AppComposer();
             var viewModel = composer.Compose();
+            viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string, string>()));
 			DataContext = viewModel;
 			viewModel.Load(CancellationToken.None);
 		}		

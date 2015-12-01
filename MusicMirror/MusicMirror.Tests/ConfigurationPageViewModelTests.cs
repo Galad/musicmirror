@@ -19,13 +19,13 @@ using static Microsoft.Reactive.Testing.ReactiveTest;
 
 namespace MusicMirror.Tests
 {
-    public class ConfigurationPageViewModelTests
+    public class SynchronizationStatusViewModelTests
     {
         [Theory, ViewModelAutoData]
         public void IsTranscodingRunning_WhenSynchronizationIsDisabled_ShouldReturnCorrectValue(
             [Frozen]TestSchedulers schedulers,
             [Frozen]Mock<ITranscodingNotifications> notifications,
-            ConfigurationPageViewModel sut)
+            SynchronizationStatusViewModel sut)
         {
             //act
             var actual = schedulers.Start(() => sut.IsTranscodingRunning);
@@ -51,7 +51,7 @@ namespace MusicMirror.Tests
                 OnNext(205, false)
                 );
             notifications.Setup(n => n.ObserveIsTranscodingRunning()).Returns(notificationsObservable);
-            var sut = fixture.Create<ConfigurationPageViewModel>();
+            var sut = fixture.Create<SynchronizationStatusViewModel>();
             //act
             var actual = schedulers.Start(() => sut.IsTranscodingRunning);
             //assert
@@ -68,7 +68,7 @@ namespace MusicMirror.Tests
         public void SynchronizedFileCount_WhenNoFileIsTranscoding_ShouldReturnCorrectValue(
             [Frozen]TestSchedulers schedulers,
             [Frozen]Mock<ITranscodingNotifications> notifications,
-            ConfigurationPageViewModel sut)
+            SynchronizationStatusViewModel sut)
         {
             //arrange
             var notificationsObservable = schedulers.CreateHotObservable<bool>();
@@ -88,7 +88,7 @@ namespace MusicMirror.Tests
         public void SynchronizedFileCount_WhenTranscodingIsNotRunning_AndFileNotificationsArePushed_ShouldReturnCorrectValue(
             [Frozen]TestSchedulers schedulers,
             [Frozen]Mock<ITranscodingNotifications> notifications,
-            ConfigurationPageViewModel sut,
+            SynchronizationStatusViewModel sut,
             IFileNotification[] fileNotifications)
         {
             //arrange
@@ -123,7 +123,7 @@ namespace MusicMirror.Tests
                 OnNext(201, true));
             notifications.Setup(n => n.ObserveIsTranscodingRunning()).Returns(notificationsObservable);
             notifications.Setup(n => n.ObserveNotifications()).Returns(fileNotificationsObservable);
-            var sut = fixture.Create<ConfigurationPageViewModel>();
+            var sut = fixture.Create<SynchronizationStatusViewModel>();
             //act
             var actual = schedulers.Start(() => sut.SynchronizedFileCount);
             //assert
@@ -149,7 +149,7 @@ namespace MusicMirror.Tests
                 OnNext(Subscribed + 1, true));
             notifications.Setup(n => n.ObserveIsTranscodingRunning()).Returns(notificationsObservable);
             notifications.Setup(n => n.ObserveNotifications()).Returns(fileNotificationsObservable);
-            var sut = fixture.Create<ConfigurationPageViewModel>();
+            var sut = fixture.Create<SynchronizationStatusViewModel>();
             //act
             var actual = schedulers.Start(() => sut.SynchronizedFileCount);
             //assert                                    
@@ -185,15 +185,15 @@ namespace MusicMirror.Tests
                 OnNext(Subscribed + 300 + TranscodingStoppedRelativeTime, false));
             notifications.Setup(n => n.ObserveIsTranscodingRunning()).Returns(notificationsObservable);
             notifications.Setup(n => n.ObserveNotifications()).Returns(fileNotificationsObservable);
-            var sut = fixture.Create<ConfigurationPageViewModel>();
-            
+            var sut = fixture.Create<SynchronizationStatusViewModel>();
+
             //act
             var actual = schedulers.Start(() => sut.SynchronizedFileCount);
             //assert                                    
             var expected = OnNext(Subscribed, SynchronizedFilesCountViewModel.Empty).Yield()
-                        .Concat(CreateExpectedFileNotifications(fileNotifications, 101))                        
-                        .Concat(CreateExpectedFileNotifications(fileNotifications, 201))                        
-                        .Concat(CreateExpectedFileNotifications(fileNotifications, 301))                        
+                        .Concat(CreateExpectedFileNotifications(fileNotifications, 101))
+                        .Concat(CreateExpectedFileNotifications(fileNotifications, 201))
+                        .Concat(CreateExpectedFileNotifications(fileNotifications, 301))
                         .ToArray();
 
             actual.Messages.ShouldAllBeEquivalentTo(expected);
@@ -204,10 +204,10 @@ namespace MusicMirror.Tests
             int offset)
         {
             return fileNotifications.Aggregate(new List<int>(), (list, files) =>
-                                    {
-                                        list.Add(list.LastOrDefault() + files.Length);
-                                        return list;
-                                    })
+            {
+                list.Add(list.LastOrDefault() + files.Length);
+                return list;
+            })
                                     .Select((f, i) => OnNext(Subscribed + i + offset, new SynchronizedFilesCountViewModel(0, f)));
         }
 
@@ -225,7 +225,7 @@ namespace MusicMirror.Tests
                 fileNotifications.Select((f, i) => OnNext(203 + i, FileTranscodingResultNotification.CreateSuccess(f))).ToArray());
             notifications.Setup(n => n.ObserveIsTranscodingRunning()).Returns(notificationsObservable);
             notifications.Setup(n => n.ObserveTranscodingResult()).Returns(transcodingResultsObservable);
-            var sut = fixture.Create<ConfigurationPageViewModel>();
+            var sut = fixture.Create<SynchronizationStatusViewModel>();
             //act
             var actual = schedulers.Start(() => sut.SynchronizedFileCount);
             //assert
@@ -263,19 +263,19 @@ namespace MusicMirror.Tests
                                  );
             notifications.Setup(n => n.ObserveIsTranscodingRunning()).Returns(notificationsObservable);
             notifications.Setup(n => n.ObserveTranscodingResult()).Returns(transcodingResultsObservable);
-            var sut = fixture.Create<ConfigurationPageViewModel>();
+            var sut = fixture.Create<SynchronizationStatusViewModel>();
             //act
             var actual = schedulers.Start(() => sut.SynchronizedFileCount.Do(_ => { }));
             //assert
             Func<long, IEnumerable<Recorded<Notification<SynchronizedFilesCountViewModel>>>> createExpectedFileNotifications =
-                offset => fileNotifications.Select((f, i) => OnNext(offset + i, new SynchronizedFilesCountViewModel(i + 1, 0)));      
+                offset => fileNotifications.Select((f, i) => OnNext(offset + i, new SynchronizedFilesCountViewModel(i + 1, 0)));
             var expected = new[]
                 {
                     OnNext(Subscribed, SynchronizedFilesCountViewModel.Empty),
                 }
-                .Concat(createExpectedFileNotifications(Subscribed + 101))                
-                .Concat(createExpectedFileNotifications(Subscribed + 201))                
-                .Concat(createExpectedFileNotifications(Subscribed + 301))                
+                .Concat(createExpectedFileNotifications(Subscribed + 101))
+                .Concat(createExpectedFileNotifications(Subscribed + 201))
+                .Concat(createExpectedFileNotifications(Subscribed + 301))
                 .ToArray();
             actual.Messages.ShouldAllBeEquivalentTo(expected);
         }
@@ -297,7 +297,7 @@ namespace MusicMirror.Tests
                                  .ToArray());
             notifications.Setup(n => n.ObserveIsTranscodingRunning()).Returns(notificationsObservable);
             notifications.Setup(n => n.ObserveTranscodingResult()).Returns(transcodingResultsObservable);
-            var sut = fixture.Create<ConfigurationPageViewModel>();
+            var sut = fixture.Create<SynchronizationStatusViewModel>();
             //act
             var actual = schedulers.Start(() => sut.SynchronizedFileCount);
             //assert

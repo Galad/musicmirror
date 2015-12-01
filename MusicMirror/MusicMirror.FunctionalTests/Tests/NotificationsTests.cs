@@ -50,18 +50,18 @@ namespace MusicMirror.FunctionalTests.Tests
         [Fact]
         public void Synchronization_ShouldBeDisable()
         {
-            _context.ViewModel.IsSynchronizationEnabled.Value.Should().BeFalse();
+            _context.ViewModel.SynchronizationStatusViewModel.IsSynchronizationEnabled.Value.Should().BeFalse();
         }
 
         [Fact]
         public async Task WhenIEnableTheSynchronization_TheSynchronizationShouldBeEnabled()
         {
             //arrange
-            var observable = _context.ViewModel.IsSynchronizationEnabled.Replay();
+            var observable = _context.ViewModel.SynchronizationStatusViewModel.IsSynchronizationEnabled.Replay();
             //act
             using (observable.Connect())
             {
-                _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+                _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
                 var actual = await observable.Skip(1).Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
                 //assert
                 actual.Should().BeTrue();
@@ -72,12 +72,12 @@ namespace MusicMirror.FunctionalTests.Tests
         public async Task GivenTheSynchronizationIsEnabled_WhenIDisableTheSynchronization_TheSynchronizationShouldBeDisabled()
         {
             //arrange
-            _context.ViewModel.EnableSynchronizationCommand.Execute(null);
-            var observable = _context.ViewModel.IsSynchronizationEnabled.Replay();
+            _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
+            var observable = _context.ViewModel.SynchronizationStatusViewModel.IsSynchronizationEnabled.Replay();
             //act
             using (observable.Connect())
             {
-                _context.ViewModel.DisableSynchronizationCommand.Execute(null);
+                _context.ViewModel.SynchronizationStatusViewModel.DisableSynchronizationCommand.Execute(null);
                 var actual = await observable.Skip(1).Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
                 //assert
                 actual.Should().BeFalse();
@@ -88,7 +88,7 @@ namespace MusicMirror.FunctionalTests.Tests
         public async Task WhenSynchronizationIsDisabled_ThenTheSynchronizationStatusShouldBeEmpty()
         {
             //act			
-            var actual = await _context.ViewModel.SynchronizedFileCount.Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
+            var actual = await _context.ViewModel.SynchronizationStatusViewModel.SynchronizedFileCount.Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
             //assert			
             actual.ShouldBeEquivalentTo(SynchronizedFilesCountViewModel.Empty);
         }
@@ -97,9 +97,9 @@ namespace MusicMirror.FunctionalTests.Tests
         public async Task WhenSynchronizationIsEnabled_AndThereIsNoFileInTheTargetFolder_ThenTheSynchronizationStatusShouldBeEmpty()
         {
             //act			
-            _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+            _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
             await Task.Delay(1.Seconds());
-            var actual = await _context.ViewModel.SynchronizedFileCount.Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken()).ConfigureAwait(false);
+            var actual = await _context.ViewModel.SynchronizationStatusViewModel.SynchronizedFileCount.Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken()).ConfigureAwait(false);
             //assert			
             actual.ShouldBeEquivalentTo(SynchronizedFilesCountViewModel.Empty);
         }
@@ -108,7 +108,7 @@ namespace MusicMirror.FunctionalTests.Tests
         public async Task WhenSynchronizationIsDisabled_ThenTheTranscodingStatusShoulReturnFalse()
         {
             //act			
-            var actual = await _context.ViewModel.IsTranscodingRunning.Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
+            var actual = await _context.ViewModel.SynchronizationStatusViewModel.IsTranscodingRunning.Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
             //assert			
             actual.Should().BeFalse();
         }
@@ -117,9 +117,9 @@ namespace MusicMirror.FunctionalTests.Tests
         public async Task WhenSynchronizationIsEnabled_AndThereIsNoFileInTheTargetFolder_ThenTheTranscodingStatusShoulReturnFalse()
         {
             //act			
-            _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+            _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
             await Task.Delay(1.Seconds());
-            var actual = await _context.ViewModel.IsTranscodingRunning.Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
+            var actual = await _context.ViewModel.SynchronizationStatusViewModel.IsTranscodingRunning.Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
             //assert			
             actual.Should().BeFalse();
         }
@@ -141,8 +141,8 @@ namespace MusicMirror.FunctionalTests.Tests
             //arrange
             _context.SourceDirectorySetup()
                     .WithFile(TestFilesConstants.MP3.SourceNormalFile1);
-            var task = _context.ViewModel.IsTranscodingRunning.Skip(1).Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
-            _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+            var task = _context.ViewModel.SynchronizationStatusViewModel.IsTranscodingRunning.Skip(1).Take(1).ToTask(TestContextUtils.CreateShortTimedOutCancellationToken());
+            _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
             //act
             var actual = await task;
             //assert
@@ -157,10 +157,10 @@ namespace MusicMirror.FunctionalTests.Tests
             files.Aggregate(_context.SourceDirectorySetup(), (s, f) => s.WithFile(f));
             var scheduler = new TestScheduler();
             var observer = scheduler.CreateObserver<SynchronizedFilesCountViewModel>();
-            using (_context.ViewModel.SynchronizedFileCount.Subscribe(observer))
+            using (_context.ViewModel.SynchronizationStatusViewModel.SynchronizedFileCount.Subscribe(observer))
             {
                 var task = _context.WaitUntilTranscodingComplete(TestContextUtils.CreateLongTimedOutCancellationToken());
-                _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+                _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
                 await task;
             }
             var actual = observer.Values().ToArray();
@@ -181,18 +181,18 @@ namespace MusicMirror.FunctionalTests.Tests
                     .WithFile(TestFilesConstants.MP3.SourceNormalFile1);
             var scheduler = new TestScheduler();
             var task = _context.WaitUnitFirstFileIsFound(TestContextUtils.CreateShortTimedOutCancellationToken());
-            _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+            _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
             await task;
-            _context.ViewModel.DisableSynchronizationCommand.Execute(null);
+            _context.ViewModel.SynchronizationStatusViewModel.DisableSynchronizationCommand.Execute(null);
             var observer = scheduler.CreateObserver<SynchronizedFilesCountViewModel>();
 
             //using (_context.ViewModel.SynchronizedFileCount.Subscribe(observer))
-            using (_context.ViewModel.SynchronizedFileCount.Subscribe(
+            using (_context.ViewModel.SynchronizationStatusViewModel.SynchronizedFileCount.Subscribe(
             Observer.Create<SynchronizedFilesCountViewModel>(t => observer.OnNext(t), e => observer.OnError(e), () => observer.OnCompleted())
                 ))
             {
                 var task2 = _context.WaitUntilTranscodingComplete(TestContextUtils.CreateLongTimedOutCancellationToken());
-                _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+                _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
                 await task2;
             }
             var actual = observer.Values().ToArray();
@@ -214,14 +214,14 @@ namespace MusicMirror.FunctionalTests.Tests
             files.Aggregate(_context.SourceDirectorySetup(), (s, f) => s.WithFile(f));
             var scheduler = new TestScheduler();
             var observer = scheduler.CreateObserver<SynchronizedFilesCountViewModel>();
-            using (_context.ViewModel.SynchronizedFileCount.Subscribe(observer))
+            using (_context.ViewModel.SynchronizationStatusViewModel.SynchronizedFileCount.Subscribe(observer))
             {
                 var task = _context.WaitUntilTranscodingComplete(TestContextUtils.CreateLongTimedOutCancellationToken());
-                _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+                _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
                 await task;
-                _context.ViewModel.DisableSynchronizationCommand.Execute(null);
+                _context.ViewModel.SynchronizationStatusViewModel.DisableSynchronizationCommand.Execute(null);
                 var task2 = _context.WaitUntilTranscodingComplete(TestContextUtils.CreateLongTimedOutCancellationToken());
-                _context.ViewModel.EnableSynchronizationCommand.Execute(null);
+                _context.ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
                 await task2;
             }
             var actual = observer.Values().ToArray();

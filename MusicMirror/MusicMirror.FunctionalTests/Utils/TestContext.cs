@@ -16,6 +16,7 @@ using System.Diagnostics;
 using Xunit.Abstractions;
 using Moq;
 using NLog;
+using Hanno.Navigation;
 
 namespace MusicMirror.FunctionalTests.Utils
 {
@@ -26,7 +27,7 @@ namespace MusicMirror.FunctionalTests.Utils
         private readonly string _sourceDirectory;
         private readonly string _targetDirectory;
         private readonly TestFilesRepository _testFilesRepository;
-        private readonly ConfigurationPageViewModel _viewModel;
+        private readonly MainPageViewModel _viewModel;
         private readonly ILogger _logger;
 
         public TestContext(Composer composer, TestFilesRepository testFilesRepository, string testFolder)
@@ -48,10 +49,11 @@ namespace MusicMirror.FunctionalTests.Utils
 
         public async Task Load(CancellationToken ct)
         {
+            _viewModel.Initialize(new NavigationRequest("Main", new Dictionary<string,string>()));
             await _viewModel.Load(ct);
-            ViewModel.SourcePath.OnNext(_sourceDirectory);
-            ViewModel.TargetPath.OnNext(_targetDirectory);
-            ViewModel.SaveCommand.Execute(null);
+            ViewModel.ConfigurationViewModel.SourcePath.OnNext(_sourceDirectory);
+            ViewModel.ConfigurationViewModel.TargetPath.OnNext(_targetDirectory);
+            ViewModel.ConfigurationViewModel.SaveCommand.Execute(null);
         }
 
         public void Dispose()
@@ -106,7 +108,7 @@ namespace MusicMirror.FunctionalTests.Utils
         public async Task ExecuteSynchronization(CancellationToken ct)
         {
             var synchronizationCompleteTask = WaitUntilTranscodingComplete(ct).ConfigureAwait(false);
-            ViewModel.EnableSynchronizationCommand.Execute(null);
+            ViewModel.SynchronizationStatusViewModel.EnableSynchronizationCommand.Execute(null);
             await synchronizationCompleteTask;
         }
 
@@ -136,7 +138,7 @@ namespace MusicMirror.FunctionalTests.Utils
         public ISynchronizationController SynchronizationController { get { return _composer.Resolve<ISynchronizationController>(); } }
         public ITranscodingNotifications SynchronizationNotifications { get { return _composer.Resolve<ITranscodingNotifications>(); } }
 
-        public ConfigurationPageViewModel ViewModel
+        public MainPageViewModel ViewModel
         {
             get
             {

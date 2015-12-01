@@ -9,29 +9,30 @@
     </Window.Resources>
     <StackPanel x:Name="RootPanel">
         <TextBlock Text="Source Path" />
-        <TextBox Text="{Binding SourcePath.Value, Mode=TwoWay}" />
+        <TextBox Text="{Binding ConfigurationViewModel.SourcePath.Value, Mode=TwoWay}" />
         <TextBlock Text="Target Path" />
-        <TextBox Text="{Binding TargetPath.Value, Mode=TwoWay}" />
+		<TextBox Text="{Binding ConfigurationViewModel.TargetPath.Value, Mode=TwoWay}" />
         <StackPanel Orientation="Horizontal" 
+					DataContext="{Binding SynchronizationStatusViewModel}"
 					Visibility="{Binding IsTranscodingRunning.Value, Converter={StaticResource TrueToVisibility}, Mode=OneWay}">
 			<ProgressBar IsIndeterminate="True" Width="80" />
-            <TextBlock DataContext="{Binding SynchronizedFileCount.Value}">
+			<TextBlock DataContext="{Binding SynchronizedFileCount.Value}">
 				<Run Text="Transcoding files " />
 				<Run Text="{Binding SynchronizedFilesCount, Mode=OneWay}" />
 				<Run Text=" on " />
 				<Run Text="{Binding TotalFileCount, Mode=OneWay}" />
             </TextBlock>
         </StackPanel>
-        <Button Content="Save" HorizontalAlignment="Right" Command="{Binding SaveCommand}" Margin="0,8,0,0" />
+		<Button Content="Save" HorizontalAlignment="Right" Command="{Binding ConfigurationViewModel.SaveCommand}" Margin="0,8,0,0" />
         <Button Content="Start" 
-				Visibility="{Binding IsSynchronizationEnabled.Value, Converter={StaticResource FalseToVisibility}}"  
+				Visibility="{Binding SynchronizationStatusViewModel.IsSynchronizationEnabled.Value, Converter={StaticResource FalseToVisibility}}"  
 				HorizontalAlignment="Right" 
-				Command="{Binding EnableSynchronizationCommand}" 
+				Command="{Binding SynchronizationStatusViewModel.EnableSynchronizationCommand}" 
 				Margin="0,8,0,0" />
         <Button Content="Stop" 
-				Visibility="{Binding IsSynchronizationEnabled.Value, Converter={StaticResource TrueToVisibility}}"  
+				Visibility="{Binding SynchronizationStatusViewModel.IsSynchronizationEnabled.Value, Converter={StaticResource TrueToVisibility}}"  
 				HorizontalAlignment="Right" 
-				Command="{Binding DisableSynchronizationCommand}" 
+				Command="{Binding SynchronizationStatusViewModel.DisableSynchronizationCommand}" 
 				Margin="0,8,0,0" />
     </StackPanel>
 </Window>
