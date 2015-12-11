@@ -156,11 +156,11 @@
     <Compile Include="Autofixture\AutoMoq.cs" />
     <Compile Include="Autofixture\TestObservableWrapper.cs" />
     <Compile Include="ConfigurationObservableTests.cs" />
-    <Compile Include="ConfigurationPageViewModelTests.cs" />
     <Compile Include="Customizations\FileCustomizations.cs" />
     <Compile Include="Customizations\FileInfoEqualityComparer.cs" />
     <Compile Include="Customizations\RxAutoData.cs" />
     <Compile Include="Customizations\ViewModelCustomization.cs" />
+    <Compile Include="Customizations\ViewModelTransformation.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="FileExtensionsTests.cs" />
     <Compile Include="FileSynchronizerTests.cs" />
@@ -168,6 +168,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Customizations\SourceFilePath.cs" />
     <Compile Include="SynchronizationControllerTests.cs" />
+    <Compile Include="SynchronizationStatusViewModelTests.cs" />
     <Compile Include="Synchronization\ChooseFolderOperationTests.cs" />
     <Compile Include="Synchronization\CompositeRequireTranscodingTests.cs" />
     <Compile Include="SynchronizedFilesRepositoryTests.cs" />

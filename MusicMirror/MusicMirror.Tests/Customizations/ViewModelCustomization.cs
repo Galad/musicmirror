@@ -18,6 +18,7 @@ using Hanno.CqrsInfrastructure;
 using Xunit.Sdk;
 using Xunit;
 using Hanno.Testing.Autofixture;
+using System.Reflection;
 
 namespace MusicMirror.Tests.Customizations
 {
@@ -25,10 +26,7 @@ namespace MusicMirror.Tests.Customizations
     {
         public void Customize(IFixture fixture)
         {
-            fixture.Customize<ConfigurationViewModel>(c => c.Do(vm =>
-            {
-                vm.Initialize(fixture.Create<INavigationRequest>());
-            }));
+            fixture.Behaviors.Add(new ViewModelTransformation());
             fixture.Customize<Mock<IViewModelServices>>(c => c.Do(m =>
             {
                 m.DefaultValue = DefaultValue.Empty;
@@ -41,26 +39,6 @@ namespace MusicMirror.Tests.Customizations
                 m.Setup(s => s.RuleProvider).Returns(fixture.Create<IRuleProvider>());                
             })
             .OmitAutoProperties());
-        }
-
-        private class ViewModelPostProcessor : ISpecimenBuilder
-        {
-            public object Create(object request, ISpecimenContext context)
-            {
-                var result = context.Resolve(request);
-                if (result == null || !typeof(IViewModel).IsAssignableFrom(result.GetType()))
-                {
-                    return result;
-                }
-                var viewModel = (IViewModel)result;
-                var viewModelRequestAsObject = context.Resolve(typeof(INavigationRequest));
-                if (viewModelRequestAsObject.GetType() != typeof(INavigationRequest))
-                {
-                    throw new InvalidOperationException("Could not intialized the view model because the navigation request could not be created.");
-                }
-                viewModel.Initialize((INavigationRequest)viewModelRequestAsObject);
-                return viewModel;
-            }
         }
     }
 
