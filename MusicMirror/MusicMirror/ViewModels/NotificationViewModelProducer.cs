@@ -27,7 +27,7 @@ namespace MusicMirror.ViewModels
             if (schedulers == null) throw new ArgumentNullException(nameof(schedulers));   
             _transcodingNotifications = transcodingNotifications;
             _logger = logger;
-            _schedulers = schedulers;
+            _schedulers = schedulers;            
         }
                 
         public IObservable<SynchronizedFilesCountViewModel> ObserveSynchronizedFileCount()

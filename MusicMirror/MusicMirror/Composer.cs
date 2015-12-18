@@ -158,10 +158,17 @@ namespace MusicMirror
                             c.Resolve<IViewModelServices>(),
                             c.Resolve<ISynchronizationController>(),
                             c.Resolve<ITranscodingNotifications>(),
+                            c.Resolve<INotificationViewModelProducer>(),
                             c.Resolve<Func<string, ILogger>>()("ConfigurationPageViewModel")
                         )
                     )
                 );
+            _container.RegisterType<INotificationViewModelProducer>(
+                new InjectionFactory(c =>
+                    new NotificationViewModelProducer(
+                        c.Resolve<ITranscodingNotifications>(),
+                        c.Resolve<Func<string, ILogger>>()("NotificationViewModelProducer"),
+                        c.Resolve<ISchedulers>())));
             _container.RegisterType<MainPageViewModel>();
 
             ObserveAndLog();

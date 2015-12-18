@@ -168,7 +168,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Customizations\SourceFilePath.cs" />
     <Compile Include="SynchronizationControllerTests.cs" />
-    <Compile Include="SynchronizationStatusViewModelTests.cs" />
+    <Compile Include="ViewModels\NotificationViewModelProducerTests.cs" />
+    <Compile Include="ViewModels\SynchronizationStatusViewModelTests.cs" />
     <Compile Include="Synchronization\ChooseFolderOperationTests.cs" />
     <Compile Include="Synchronization\CompositeRequireTranscodingTests.cs" />
     <Compile Include="SynchronizedFilesRepositoryTests.cs" />

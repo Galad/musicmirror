@@ -17,11 +17,13 @@ namespace MusicMirror.ViewModels
         private readonly ISynchronizationController _synchronizationController;
         private readonly ITranscodingNotifications _transcodingNotifications;
         private readonly ILogger _logger;
+        private readonly INotificationViewModelProducer _notificationProducer;
 
         public SynchronizationStatusViewModel(
             IViewModelServices services,
             ISynchronizationController synchronizationController,
             ITranscodingNotifications transcodingNotifications,
+            INotificationViewModelProducer notificationProducer,
             ILogger logger) : base(services)
         {
             if (transcodingNotifications == null)
@@ -29,8 +31,9 @@ namespace MusicMirror.ViewModels
             if (synchronizationController == null) throw new ArgumentNullException(nameof(synchronizationController));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             _synchronizationController = synchronizationController;
-            _transcodingNotifications = transcodingNotifications;
-            _logger = logger;            
+            _transcodingNotifications = transcodingNotifications;            
+            _logger = logger;
+            _notificationProducer = notificationProducer;
         }
 
         public IObservableProperty<bool> IsSynchronizationEnabled { get; private set; }
@@ -41,7 +44,7 @@ namespace MusicMirror.ViewModels
         {
             base.OnInitialized();
             IsSynchronizationEnabled = this.GetObservableProperty(() => _synchronizationController.ObserveSynchronizationIsEnabled(), "IsSynchronizationEnabled");
-            SynchronizedFileCount = this.GetObservableProperty(ObserveSynchronizedFileCount, "GetSynchronizedFileCount");
+            SynchronizedFileCount = this.GetObservableProperty(_notificationProducer.ObserveSynchronizedFileCount, "GetSynchronizedFileCount");
             IsTranscodingRunning = this.GetObservableProperty(() => _transcodingNotifications.ObserveIsTranscodingRunning().StartWith(Services.Schedulers.Immediate, false), "IsTranscodingRunning");
         }
 
@@ -63,35 +66,6 @@ namespace MusicMirror.ViewModels
                                              .Execute(() => _synchronizationController.Disable())
                                              .ToCommand();
             }
-        }
-
-        private IObservable<SynchronizedFilesCountViewModel> ObserveSynchronizedFileCount()
-        {
-            return _transcodingNotifications.ObserveIsTranscodingRunning()
-                                            .Where(b => b)
-                                            .Select(o =>
-                                            {
-                                                var compositeDisposable = new CompositeDisposable();
-                                                var o1 = ObserveTotalFileCount();
-                                                var o2 = ObserveSuccessFileCount();
-                                                var connectableObservable = Observable.CombineLatest(
-                                                       o1,
-                                                       o2,
-                                                       (total, successes) =>
-                                                       {
-                                                           return new SynchronizedFilesCountViewModel(successes, total);
-                                                       })
-                                                       .Do(vm => _logger.Info("Received SynchronizedFileCountNotification. Sucesses : {0}, Total : {1}", vm.SynchronizedFilesCount, vm.TotalFileCount))
-                                                       .TakeUntil(_transcodingNotifications.ObserveIsTranscodingRunning().Where(b => !b))
-                                                       .Replay(5, Services.Schedulers.Immediate);
-                                                var disposable = connectableObservable.Connect();
-                                                return Observable.Using(() => disposable, _ => connectableObservable);
-                                            })
-                                            .Switch()
-                                            .Where(vm => !vm.IsEmpty)
-                                            .DistinctUntilChanged(SynchronizedFilesCountViewModel.StructuralEqualityComparer)
-                                            .StartWith(Services.Schedulers.Immediate, SynchronizedFilesCountViewModel.Empty)
-                                            .Do(vm => _logger.Info("****Received SynchronizedFileCountNotification. Sucesses : {0}, Total : {1}", vm.SynchronizedFilesCount, vm.TotalFileCount));
         }
 
         private IObservable<SynchronizedFilesCountViewModel> ObserveEmptyFilesCount()
